@@ -1,0 +1,15 @@
+# work outputs produced per-run (videos, transcripts, snapshots)
+.interflow-video-work/
+.vtake-work/
+
+# os / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+
+# node
+node_modules/
+
+# secrets — never commit
+.env
+*.local

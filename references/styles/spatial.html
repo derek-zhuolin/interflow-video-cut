@@ -1,0 +1,207 @@
+<!--
+  Style: spatial (暗场太空舱 / 空间感) — single warm-dark atmosphere · faux-3D depth · rim light · grain · 仪表盘 chrome
+  ─────────────────────────────────────────────────────────────────────
+  ✶ 灵感来自 Awwwards 一类「获奖 studio site / 沉浸式 3D 体验页」的交集 DNA
+    （noomo 暗场悬浮产品 + 杂志 3D 隧道 + Juan Mora 暖桃黏土世界）。三者表面
+    各异，底层共享：被「单一氛围色」笼罩的、有电影级打光的「3D 空间纵深」，
+    配极小的「仪表盘式」编辑系统字（[01] / [GENERATED] / 取景框角标）+ 颗粒肌理。
+    本风格是 aurora-glass 的「立体化升级」：同样暗调电影感，但多了景深、
+    取景框 chrome 和半调颗粒。真 3D（WebGL）卡片做不了，这里用 CSS
+    perspective + 多层投影 + 径向边缘光「逼真伪造」体积感。
+
+  Tokens
+    bg-deep    #0A0908   (近黑深空，暖调，非纯黑)
+    bg-floor   #14100C   (舞台地面，略暖)
+    ink        #F4ECE2   (主文字：暖白)
+    ink-dim    rgba(244,236,226,.55)
+    ink-faint  rgba(244,236,226,.28)
+    accent     #FF8A4C   (暖橙 —— rim light / kicker / 数字 / 高光，呼应 aurora-glass)
+    accent-hi  #FFB088   (桃，辉光外缘)
+    panel      #161210   (悬浮面板实体，暗暖)
+    panel-edge rgba(255,255,255,.10)
+  Fonts
+    display/中文 — 'Inter' / 'PingFang SC'（700，大字 + 负字距，重体标题）
+    meta/EN     — ui-monospace（等宽，做角落仪表盘字，全大写 + 宽字距）
+    竖屏放大 1.3×（见 SKILL.md 竖屏 sizing 表）
+  Signature moves
+    - faux-3D 悬浮面板：.deck 容器 perspective(1400px)，.panel 轻微
+      rotateX(6deg) rotateY(-9deg) + translateZ，配「双层投影」
+      （近处硬阴影 + 远处柔扩散）造出「漂在空中」的体积感
+    - 暖橙 rim light：面板 ::after 用 radial-gradient(#FF8A4C→透明) 从背后
+      透出一圈边缘光，是整张卡的「光源」，必须比卡面亮
+    - 取景框角标（viewfinder ticks）：四角 L 形细描边，呼应相机/工程取景器
+    - 巨字压场：display 标题超大负字距，EN 副标用渐变描金
+      linear-gradient(#FFD9B0,#FF8A4C,#C8431F) + bg-clip:text
+    - 颗粒 + 半调：SVG fractalNoise（overlay）+ 极淡的 radial 点阵 halftone
+    - 暗角 vignette 压低四周，把视线聚到悬浮面板上
+  Composition-level（无单独 assets 配方，规则写在这里）
+    - 舞台底铺一颗暖橙径向辉光（circle at 50% 38%，#FF8A4C 低透明 → 透明 → bg-deep），
+      做「光从深空中央打来」的氛围；可加 1px/帧的极慢 sine 漂移
+    - 每切一张卡，面板做「推进式」转场（非硬切）：
+      进场 translateZ(-160px)→0 + scale .92→1 + blur(14px)→0，ease expo.out，~0.7s；
+      出场反向后退 + 上滑淡出模糊，前后重叠 ~0.5s（"镜头往前推"的电影感）
+    - 全片暗角 vignette 常驻；颗粒层 opacity .45 常驻
+    - 视频元素建议套 hairline frame（取景框双描边）与本风格的仪表盘字同源
+  Best with
+    layouts: overlay（暗场全出血最出彩）, pip（面板托视频小窗）, stack
+    frames:  hairline（取景框角标同源）, clean
+    content: 短视频高光 / 产品发布 / 电影感叙事 / 科技感 / 沉浸式开场收尾
+    尾卡:    card-cta（深色 Editorial Cinema，与本风格同调）
+-->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>style · spatial (暗场太空舱)</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #14110d;
+               font-family: ui-sans-serif, system-ui, sans-serif; }
+  .stage { position: relative; width: 1920px; height: 1080px;
+           transform-origin: top left; transform: scale(0.5); overflow: hidden; }
+  .card-host { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+  .card { position: absolute; inset: 0; }
+</style>
+</head>
+<body>
+<div class="stage"><div class="card-host">
+
+<div class="card" data-card-id="ref-spatial">
+  <style>
+    .card[data-card-id="ref-spatial"] .root {
+      --ink: #F4ECE2; --ink-dim: rgba(244,236,226,.55); --ink-faint: rgba(244,236,226,.28);
+      --accent: #FF8A4C; --accent-hi: #FFB088;
+      --panel: #161210; --panel-edge: rgba(255,255,255,.10);
+      --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      --font-han: 'PingFang SC', 'Inter', sans-serif;
+      --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+      width: 100%; height: 100%; position: relative; overflow: hidden;
+      color: var(--ink); font-family: var(--font-sans);
+      /* 深空底 + 中央暖橙辉光（光源在卡的纵深中央打来） */
+      background:
+        radial-gradient(circle 900px at 50% 38%, rgba(255,138,76,.20) 0%, rgba(255,138,76,.05) 34%, transparent 60%),
+        radial-gradient(circle 1200px at 50% 120%, rgba(20,16,12,1) 0%, transparent 70%),
+        #0A0908;
+      display: flex; align-items: center; justify-content: center;
+      box-sizing: border-box;
+    }
+    /* 暗角 + 颗粒 + 极淡半调点阵 */
+    .card[data-card-id="ref-spatial"] .root::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      background:
+        radial-gradient(130% 90% at 50% 40%, transparent 38%, rgba(10,9,8,.78) 100%),
+        radial-gradient(rgba(255,255,255,.04) 0.6px, transparent 0.6px) 0 0 / 5px 5px,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.45 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-blend-mode: normal, screen, overlay;
+      opacity: .9;
+    }
+
+    /* faux-3D 舞台：给子元素一个透视消失点 */
+    .card[data-card-id="ref-spatial"] .deck {
+      position: relative; z-index: 2;
+      perspective: 1400px; perspective-origin: 50% 42%;
+    }
+    /* 悬浮面板：轻微倾斜 + 双层投影 → 漂在空中 */
+    .card[data-card-id="ref-spatial"] .panel {
+      position: relative;
+      width: 1180px; padding: 92px 100px; border-radius: 32px; box-sizing: border-box;
+      background:
+        linear-gradient(160deg, rgba(255,255,255,.06), transparent 42%),
+        var(--panel);
+      border: 1px solid var(--panel-edge);
+      transform: rotateX(6deg) rotateY(-9deg) translateZ(0);
+      transform-style: preserve-3d;
+      box-shadow:
+        0 4px 0 rgba(0,0,0,.5),                 /* 近处硬边 */
+        0 60px 120px -30px rgba(0,0,0,.85),      /* 远处柔扩散 */
+        0 30px 80px -40px rgba(255,138,76,.28),  /* 暖光落影 */
+        inset 0 1px 0 rgba(255,255,255,.10);
+    }
+    /* 暖橙 rim light：从面板背后透出的边缘光（光源） */
+    .card[data-card-id="ref-spatial"] .panel::after {
+      content: ''; position: absolute; inset: -3px; border-radius: 34px; z-index: -1;
+      background: radial-gradient(120% 90% at 30% 0%, rgba(255,176,136,.55), rgba(255,138,76,.18) 40%, transparent 70%);
+      filter: blur(14px);
+    }
+    /* 取景框角标（viewfinder ticks）—— 仪表盘 chrome */
+    .card[data-card-id="ref-spatial"] .ticks span {
+      position: absolute; width: 26px; height: 26px; border: 2px solid var(--accent); opacity: .85;
+    }
+    .card[data-card-id="ref-spatial"] .ticks .tl { left: 28px; top: 28px; border-right: 0; border-bottom: 0; }
+    .card[data-card-id="ref-spatial"] .ticks .tr { right: 28px; top: 28px; border-left: 0; border-bottom: 0; }
+    .card[data-card-id="ref-spatial"] .ticks .bl { left: 28px; bottom: 28px; border-right: 0; border-top: 0; }
+    .card[data-card-id="ref-spatial"] .ticks .br { right: 28px; bottom: 28px; border-left: 0; border-top: 0; }
+
+    /* 角落仪表盘 meta 字 */
+    .card[data-card-id="ref-spatial"] .meta {
+      position: absolute; z-index: 4; font: 600 18px/1.4 var(--font-mono);
+      letter-spacing: .22em; text-transform: uppercase; color: var(--ink-dim);
+    }
+    .card[data-card-id="ref-spatial"] .meta.m-tl { left: 64px; top: 56px; }
+    .card[data-card-id="ref-spatial"] .meta.m-tr { right: 64px; top: 56px; text-align: right; color: var(--ink-faint); }
+    .card[data-card-id="ref-spatial"] .meta.m-bl { left: 64px; bottom: 56px; color: var(--ink-faint); }
+    .card[data-card-id="ref-spatial"] .meta .idx { color: var(--accent); }
+
+    /* 面板内容 */
+    .card[data-card-id="ref-spatial"] .kicker {
+      font: 600 22px/1 var(--font-mono); letter-spacing: .4em; text-transform: uppercase;
+      color: var(--ink-dim); margin-bottom: 34px;
+    }
+    .card[data-card-id="ref-spatial"] .kicker .dot { color: var(--accent); }
+    .card[data-card-id="ref-spatial"] .title {
+      font: 700 138px/1.0 var(--font-han); letter-spacing: -.03em; color: var(--ink); margin: 0;
+      text-shadow: 0 6px 50px rgba(0,0,0,.4);
+    }
+    .card[data-card-id="ref-spatial"] .sub-en {
+      font: 700 44px/1 var(--font-sans); letter-spacing: .14em; text-transform: uppercase; margin-top: 28px;
+      background: linear-gradient(92deg, #FFD9B0, #FF8A4C 55%, #C8431F);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .card[data-card-id="ref-spatial"] .enter-row {
+      display: flex; align-items: center; gap: 24px; margin-top: 58px;
+    }
+    .card[data-card-id="ref-spatial"] .enter-row .lbl {
+      font: 600 20px/1 var(--font-mono); letter-spacing: .34em; text-transform: uppercase; color: var(--ink-dim);
+    }
+    .card[data-card-id="ref-spatial"] .enter-row .ln {
+      height: 2px; width: 0; border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .card[data-card-id="ref-spatial"] .enter-row .arr { color: var(--accent); font-size: 30px; margin-left: -8px; }
+  </style>
+
+  <div class="root">
+    <!-- 角落仪表盘字 -->
+    <div class="meta m-tl" data-anim="fade-in" data-anim-at="0.10" data-anim-duration="0.5">
+      DEMO <span class="idx">[ 01 ]</span>
+    </div>
+    <div class="meta m-tr" data-anim="fade-in" data-anim-at="0.15" data-anim-duration="0.5">
+      [ SPATIAL ]<br>GENERATED&nbsp;SCENE
+    </div>
+    <div class="meta m-bl" data-anim="fade-in" data-anim-at="0.20" data-anim-duration="0.5">
+      CINEMA&nbsp;MODE&nbsp;·&nbsp;24FPS
+    </div>
+
+    <div class="deck">
+      <div class="panel" data-anim="scale-pop" data-anim-at="0.30" data-anim-duration="0.8">
+        <div class="ticks">
+          <span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span>
+        </div>
+        <div class="kicker" data-anim="fade-in" data-anim-at="0.55" data-anim-duration="0.5">
+          DEMO <span class="dot">&bull;</span> 视觉风格预览
+        </div>
+        <h1 class="title" data-anim="slide-in" data-anim-at="0.70" data-anim-duration="0.9"
+            data-anim-from="bottom" data-anim-distance="44">暗场太空舱</h1>
+        <div class="sub-en" data-anim="fade-in" data-anim-at="1.0" data-anim-duration="0.6">SPATIAL</div>
+        <div class="enter-row">
+          <span class="lbl" data-anim="fade-in" data-anim-at="1.2" data-anim-duration="0.5">Reference Card</span>
+          <span class="ln" data-anim="grow-x" data-anim-at="1.2" data-anim-duration="0.7" data-anim-target-w="220"></span>
+          <span class="arr" data-anim="fade-in" data-anim-at="1.35" data-anim-duration="0.4">&rarr;</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div></div>
+</body>
+</html>

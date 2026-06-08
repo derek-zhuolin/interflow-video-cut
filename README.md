@@ -101,6 +101,7 @@ input.mp4
 - 所有 `<style>` 规则用 `.card[data-card-id="..."]` 前缀作用域
 - **禁止 `<script>`**、**禁止外链 URL**、**禁止内联事件**
 - 动效只用 `data-anim-*` 声明，最后统一编译进一条 GSAP 主时间轴
+- **动效默认是「丝滑」**：卡与卡**重叠滑移**转场（不硬切）+ 每张卡挂极慢**环境漂移**（入场后不冻住）+ 镜头 `#video-wrap` 与卡同相移动。恰到好处护栏：一次切换只用一个主转场动作、同屏持续运动 ≤2 个、关键信息落位后静止 ≥1.5s。详见 SKILL.md「Motion Philosophy」与 `references/DESIGN_INDEX.md` 的 Motion 段。
 
 ## 第三方资源与许可
 

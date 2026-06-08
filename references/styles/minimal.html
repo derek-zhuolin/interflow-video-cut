@@ -60,7 +60,9 @@
   </style>
 
   <div class="root">
-    <span class="kicker" data-anim="fade-in" data-anim-at="0.05" data-anim-duration="0.4">TAKEAWAY</span>
+    <!-- demonstrates the global Motion default: one restrained ambient drift per file -->
+    <span class="kicker" data-anim="drift"
+          data-anim-axis="y" data-anim-amp="6" data-anim-period="13">TAKEAWAY</span>
 
     <h1 class="title" data-anim="kinetic-chars" data-anim-at="0.3" data-anim-duration="0.6"
         data-anim-stagger="0.05" data-anim-pattern="pop">
@@ -71,7 +73,8 @@
     <div class="rule" data-anim="grow-x" data-anim-at="0.9" data-anim-duration="0.5"
          data-anim-target-w="240"></div>
 
-    <p class="detail" data-anim="fade-in" data-anim-at="1.05" data-anim-duration="0.45">
+    <!-- settle: damped entrance, the global Motion default for body content -->
+    <p class="detail" data-anim="settle" data-anim-at="1.05" data-anim-duration="0.45"
       用户给一个新界面的时间不超过五秒。这意味着第一屏不需要解释，需要让人立刻知道这是什么、为什么有用。
     </p>
   </div>

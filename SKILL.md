@@ -862,7 +862,7 @@ Required structure (see Step 6 for the full example):
 
 Rules:
 
-- Card times stay inside `composition.durationSeconds` and should not overlap unless intentional (use `data-track-index` to control z-order when they do).
+- Card times stay inside `composition.durationSeconds`. Adjacent cards **intentionally overlap** by the slip window (`SLIP ≈ 0.55s`) for the silky default transition — `data-track-index` increases per card to control z-order during the overlap (see Step 9's timing rules).
 - Visual details live in card HTML fragments (Step 8), NOT in `contentHints`. `contentHints` is your own structured prompt for designing the card; the rendered look is the HTML.
 - Keep the storyboard shape stable — even though nothing parses it, you read it back while authoring Step 8/9, and consistency keeps card IDs and timing in sync.
 - Agent-side decisions like "I picked overlay × geom × clean" do NOT belong in `storyboard.json` — keep them in working memory and use them when authoring card HTML + GSAP tweens.
@@ -1014,6 +1014,43 @@ prefer a `@container` query on the card root over hard-coding sizes:
 But for most cards, a single layout choice is fine — just pick the size
 table column that matches the storyboard's `layout` field.
 
+#### Motion Philosophy — the default is *silky*, not slideshow
+
+**Read this before authoring any animation. It overrides the old "fade in →
+freeze → fade out" instinct.** The film should feel like one continuous
+camera move with cards flowing through it, *not* a deck of slides that pop
+on and off. Four defaults make this happen:
+
+1. **Overlapping transitions, never a hard cut.** Adjacent cards overlap
+   ~0.5–0.6s. The outgoing card slides up + blurs + fades while the incoming
+   card sinks in from below — one continuous "slip", not card-A-gone-then-card-B.
+   (This is why Step 9's timing rule now *wants* overlap, see below.)
+2. **Nothing freezes after it lands.** Every card carries a slow ambient
+   `drift` so the frame is always subtly alive. Amplitude is tiny (≤12px or
+   ≤0.6°) and the period is long (8–14s) — you should *feel* it, not *watch* it.
+3. **Continuous easing.** Default entrances to `expo.out` / `power3.out` (was
+   `power2.out`); transitions and `#video-wrap` framing to `power3.inOut`.
+   Damped, weighty motion reads as "silk"; linear/snappy reads as "PowerPoint".
+4. **One persistent anchor.** `#video-wrap` (the talking-head) is the single
+   element that never cuts across the whole film. When it reframes, its move
+   shares the *same start time and same ease* as the card transition, so the
+   camera and the card slide as one gesture.
+
+**恰到好处 guardrails — restraint is the point (tasteful > busy):**
+- **One primary transition gesture per cut.** Don't stack a slide + a spin + a
+  zoom; pick the slip and let it breathe.
+- **≤2 persistent motions on screen at once** (e.g. one `drift` + the aurora
+  backdrop). More than that and the eye has nowhere to rest.
+- **Ambient motion must never out-move the speaker.** The drift is wallpaper,
+  not a performer — if it competes with the talking-head, halve it.
+- **Key info holds still ≥1.5s.** Once a number, headline, or takeaway has
+  landed, it stays readable and static long enough to actually read.
+
+These are *defaults for every style*. The per-style recipes in
+`references/styles/*.html` and `references/DESIGN_INDEX.md` (see its **Motion**
+section) layer texture on top, but the slip-transition + ambient-drift +
+shared-camera spine is universal.
+
 #### Available `data-anim` Kinds
 
 | kind | use for | key params |
@@ -1031,10 +1068,26 @@ table column that matches the storyboard's `layout` field.
 | `blur-in` | unfocused → focused | `at`, `duration` |
 | `mask-reveal` | clip reveal | `at`, `duration`, `direction=left\|right\|top\|bottom` |
 | `morph-to` | tween any CSS | `at`, `duration`, `props='{...JSON...}'` |
+| `settle` | **default entrance** — damped landing, no overshoot | `at`, `duration`, `from=bottom\|left\|right\|top` (default bottom), `distance` (default 28) |
+| `parallax-in` | entrance that keeps a slow drift after landing (depth feel) | `at`, `duration`, `from`, `distance`, `axis=x\|y`, `amp`, `period` |
+| `drift` | **ambient — runs forever, no end** — keeps the frame alive | `axis=x\|y\|rotate`, `amp` (≤12px / ≤0.6°), `period` (8–14s) |
+
+**Entrance default:** prefer `settle` over `slide-in`/`scale-pop` for body
+content (`expo.out`, no bounce — reads as silk). Reserve `scale-pop`'s bounce
+for a single deliberate accent, not every element.
+
+**`drift` is not an entrance** — it has no `at`/`duration`; it's an ambient
+yoyo loop (`yoyo:true, sine.inOut`) you attach to the card root (or a hero
+element) so nothing freezes after landing. **Use a FINITE repeat** sized to the
+composition — `repeat: Math.ceil(compDurationSec / legSec)` — never `repeat:-1`
+(the deterministic capture engine forbids infinite repeats; see the Step-9
+checklist rule). Max one or two per card (see 恰到好处 guardrails above).
 
 `data-anim-at` is **seconds relative to the card's startSec** — when you
 compile each declaration into the GSAP timeline in Step 9, add the
-card's `startSec` to get the absolute time and quantize to 1/fps.
+card's `startSec` to get the absolute time and quantize to 1/fps. Default
+eases are now **`expo.out` (entrance), `power2.in` (exit), `power3.inOut`
+(transition / `#video-wrap`)** — see the cheat sheet.
 
 #### card-cta: Brand Outro Card (dark default — RE-THEME to match the composition)
 
@@ -1435,17 +1488,22 @@ html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
     <!-- paste the contents of public/cards/card-01.html here -->
   </div>
 
-  <!-- Example: card-02 with zone="side-panel" (split composition layout) → card on left half -->
+  <!-- Example: card-02 with zone="side-panel" (split composition layout) → card on left half.
+       data-start = card-01.endSec − SLIP (7.5 − 0.55 = 6.95) so the slips OVERLAP.
+       data-track-index INCREASES per card (3 > 2) so the incoming card covers the
+       outgoing one during the overlap. -->
   <div class="card-host clip"
        data-card-id="card-02"
-       data-start="8.0000"
-       data-duration="12.0000"
-       data-track-index="2"
+       data-start="6.9500"
+       data-duration="13.0500"
+       data-track-index="3"
        style="left:0;top:0;width:960px;height:1080px;visibility:hidden;opacity:0;">
     <!-- card-02 HTML -->
   </div>
 
-  <!-- ...one "card-host clip" per card with inline bounds matching resolveZoneBounds(card.zone)... -->
+  <!-- ...one "card-host clip" per card with inline bounds matching resolveZoneBounds(card.zone).
+       Each card's data-start = previous card's endSec − SLIP, and data-track-index
+       increases by 1 every card (2, 3, 4, …) so overlapping slips layer correctly. -->
 
   <script src="vendor/gsap.min.js"></script>
   <script>
@@ -1461,47 +1519,62 @@ html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
 
     const tl = window.gsap.timeline({ paused: true });
 
-    // ── Card lifecycle (one block per card) ──
-    // Example for card-01 [1.0, 7.5] with kinetic-chars at +0.3, grow-x at +0.65:
+    // ── Card lifecycle: SLIP transition + ambient drift (the silky default) ──
+    // NOT fade-in/freeze/fade-out. Each card slips in from below (blur→0,
+    // sink→0), drifts gently its whole life, then slips up+out — and the NEXT
+    // card's slip-in OVERLAPS this slip-out by ~0.55s so there is never a hard
+    // cut. Incoming card sits on a higher data-track-index so it covers the
+    // outgoing one during the overlap. See "Motion Philosophy" above.
+    //
+    // const SLIP = 0.55;  // overlap window (0.45–0.7); also the slip duration knob
+    // Example: card-01 [1.0, 7.5], card-02 enters at 7.5 − SLIP = 6.95 (overlap).
 
-    // Enter (fade in over 0.4s)
-    tl.set('.card-host[data-card-id="card-01"]',  { visibility: 'visible' }, 1.0000);
+    // card-01 ENTER — slip up into place (expo.out), at startSec
+    tl.set('.card-host[data-card-id="card-01"]', { visibility: 'visible' }, 1.0000);
     tl.fromTo('.card-host[data-card-id="card-01"]',
-              { opacity: 0 }, { opacity: 1, duration: 0.4000, ease: 'power2.out' }, 1.0000);
+              { opacity: 0, y: 120, filter: 'blur(16px)', scale: 0.94 },
+              { opacity: 1, y: 0, filter: 'blur(0px)', scale: 1, duration: 0.7000, ease: 'expo.out' },
+              1.0000);
 
-    // Card-internal anims (compile each data-anim-* declaration here)
+    // card-01 AMBIENT DRIFT — starts at startSec, keeps the frame alive.
+    // FINITE repeat sized to the composition (repeat:-1 is forbidden — see checklist).
+    // legSec=11; with compDurationSec e.g. 33 → Math.ceil(33/11)=3 → covers the film.
+    tl.to('.card[data-card-id="card-01"] .root',
+          { y: '+=10', duration: 11, ease: 'sine.inOut', repeat: Math.ceil(compDurationSec / 11), yoyo: true }, 1.0000);
+
+    // card-01 internal anims (compile each data-anim-* declaration here; expo.out default)
     tl.from('.card[data-card-id="card-01"] #card-01-title .char',
-            { opacity: 0, y: 8, scale: 0.8, duration: 0.5000, ease: 'power2.out', stagger: 0.0400 },
+            { opacity: 0, y: 8, scale: 0.9, duration: 0.5000, ease: 'expo.out', stagger: 0.0400 },
             1.3000);
     tl.fromTo('.card[data-card-id="card-01"] #card-01-line',
-              { width: 0 }, { width: 420, duration: 0.5000, ease: 'power2.out' }, 1.6500);
+              { width: 0 }, { width: 420, duration: 0.5000, ease: 'expo.out' }, 1.6500);
 
-    // Exit (fade out over 0.35s, ending at endSec)
+    // card-01 EXIT — slip UP + blur + fade, starting at the OVERLAP point (endSec − SLIP),
+    // so it leaves while card-02 is already arriving. ease power2.in.
     tl.to('.card-host[data-card-id="card-01"]',
-          { opacity: 0, duration: 0.3500, ease: 'power2.in' }, 7.1500);
+          { opacity: 0, y: -90, filter: 'blur(10px)', duration: 0.5000, ease: 'power2.in' }, 6.9500);
     tl.set('.card-host[data-card-id="card-01"]', { visibility: 'hidden' }, 7.5000);
 
-    // ── Video framing transitions ──
-    // When the next card uses a different composition layout, animate the
-    // video-wrapper to its new bounds. Example: card-01 = fullscreen
-    // (video hidden behind), card-02 = split composition (zone="side-panel"
-    // → video on right, card on left).
-
-    // Card-02 enters at 8.0s with the split composition. Animate video to
-    // the right half during the card-01 → card-02 gap (between 7.5 and 8.0s).
-    tl.set('#video-wrap', { className: 'video-wrapper framed' }, 7.5);
+    // ── Video framing: move IN PHASE with the card slip ──
+    // If card-02's layout differs, reframe #video-wrap at the SAME T and a
+    // matching ease (power3.inOut) as the slip, so camera + card move as one.
+    tl.set('#video-wrap', { className: 'video-wrapper framed' }, 6.9500);
     tl.to('#video-wrap',
           { left: 960, top: 0, width: 960, height: 1080,
-            duration: 0.6, ease: 'power2.inOut' }, 7.5);
+            duration: 0.7, ease: 'power3.inOut' }, 6.9500);
 
-    // Card-02 enter — same pattern as card-01
-    tl.set('.card-host[data-card-id="card-02"]', { visibility: 'visible' }, 8.0);
+    // card-02 ENTER — overlaps card-01's exit (same SLIP, higher track-index)
+    tl.set('.card-host[data-card-id="card-02"]', { visibility: 'visible' }, 6.9500);
     tl.fromTo('.card-host[data-card-id="card-02"]',
-              { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.out' }, 8.0);
+              { opacity: 0, y: 120, filter: 'blur(16px)', scale: 0.94 },
+              { opacity: 1, y: 0, filter: 'blur(0px)', scale: 1, duration: 0.7, ease: 'expo.out' },
+              6.9500);
+    tl.to('.card[data-card-id="card-02"] .root',
+          { y: '+=10', duration: 11, ease: 'sine.inOut', repeat: Math.ceil(compDurationSec / 11), yoyo: true }, 6.9500);
     // ...card-02 internal anims...
 
-    // ── repeat for each card; if the NEXT card's layout differs,
-    //    insert another tl.to('#video-wrap', ...) tween before its enter ──
+    // ── repeat for each card; the next card always enters at (this.endSec − SLIP).
+    //    if the next card's layout differs, the #video-wrap tween rides the SAME T. ──
 
     window.__timelines = window.__timelines || {};
     window.__timelines["interflow"] = tl;
@@ -1520,38 +1593,52 @@ Selector is `.card[data-card-id="X"] #elementId`.
 
 | data-anim | GSAP statement template |
 |---|---|
-| `fade-in` | `tl.fromTo(SEL, { opacity: 0 }, { opacity: 1, duration: D, ease: 'power2.out' }, T);` |
+| `fade-in` | `tl.fromTo(SEL, { opacity: 0 }, { opacity: 1, duration: D, ease: 'expo.out' }, T);` |
 | `fade-out` | `tl.to(SEL, { opacity: 0, duration: D, ease: 'power2.in' }, T);` |
-| `slide-in` (from=left, dist=80) | `tl.fromTo(SEL, { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: D, ease: 'power2.out' }, T);` |
-| `kinetic-chars` (pop) | `tl.from(SEL + ' .char', { opacity: 0, y: 8, scale: 0.8, duration: D, ease: 'power2.out', stagger: S }, T);` |
+| `settle` (from=bottom, dist=28) **← default entrance** | `tl.fromTo(SEL, { opacity: 0, y: 28, filter: 'blur(6px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: D, ease: 'expo.out' }, T);` |
+| `slide-in` (from=left, dist=80) | `tl.fromTo(SEL, { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: D, ease: 'expo.out' }, T);` |
+| `parallax-in` (from=bottom dist=40, axis=y amp=8 period=11) | `tl.fromTo(SEL, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: D, ease: 'expo.out' }, T); tl.to(SEL, { y: '+=8', duration: 11, ease: 'sine.inOut', repeat: Math.ceil(compDurationSec/11), yoyo: true }, T + D);` |
+| `drift` (axis=y amp=10 period=11) **← ambient, no at/duration; FINITE repeat** | `tl.to(SEL, { y: '+=10', duration: 11, ease: 'sine.inOut', repeat: Math.ceil(compDurationSec/11), yoyo: true }, T_cardStart); // axis=x → x; axis=rotate → rotation:'+=0.6'. NEVER repeat:-1` |
+| `kinetic-chars` (pop) | `tl.from(SEL + ' .char', { opacity: 0, y: 8, scale: 0.9, duration: D, ease: 'expo.out', stagger: S }, T);` |
 | `count-up` | `(function(){const o={v:FROM};tl.to(o,{v:TO,duration:D,ease:'power2.out',onUpdate:function(){const el=document.querySelector(SEL);if(el)el.textContent=__fmt(o.v,'FMT');}},T);})();` |
 | `draw-path` | `(function(){const el=document.querySelector(SEL);if(!el)return;const L=el.getTotalLength();tl.set(SEL,{strokeDasharray:L,strokeDashoffset:L},T);tl.to(SEL,{strokeDashoffset:0,duration:D,ease:'power2.inOut'},T);})();` |
-| `grow-x` (target-w=W) | `tl.fromTo(SEL, { width: 0 }, { width: W, duration: D, ease: 'power2.out' }, T);` |
-| `grow-y` (target-h=H) | `tl.fromTo(SEL, { height: 0 }, { height: H, duration: D, ease: 'power2.out' }, T);` |
-| `scale-pop` | `tl.fromTo(SEL, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: D, ease: 'back.out(1.6)' }, T);` |
-| `mask-reveal` (direction=left) | `tl.fromTo(SEL, { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)', duration: D, ease: 'power2.inOut' }, T);` |
+| `grow-x` (target-w=W) | `tl.fromTo(SEL, { width: 0 }, { width: W, duration: D, ease: 'expo.out' }, T);` |
+| `grow-y` (target-h=H) | `tl.fromTo(SEL, { height: 0 }, { height: H, duration: D, ease: 'expo.out' }, T);` |
+| `scale-pop` (accent only) | `tl.fromTo(SEL, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: D, ease: 'back.out(1.6)' }, T);` |
+| `mask-reveal` (direction=left) | `tl.fromTo(SEL, { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)', duration: D, ease: 'power3.inOut' }, T);` |
+
+`drift`/`parallax-in` loops start at the card's startSec (drift) or right
+after the entrance lands (parallax-in) and **deliberately have no end** — they
+run through the card's whole life including its exit slip. Keep `amp` tiny so
+the loop never fights the speaker.
 
 Quantize: `T = Math.round(absSec * fps) / fps`. At 30fps the smallest
 step is `1/30 ≈ 0.0333s`; rounding to 4 decimals (`.toFixed(4)`) is fine
 inside the JS literal.
 
-#### Validate card timing BEFORE compiling (prevents flicker / overlap)
+#### Validate card timing BEFORE compiling (overlap is now intentional)
 
-Rounding each card's `startSec`/`endSec` to the frame grid can silently push
-two adjacent cards into overlap (card B fades in while card A is still fading
-out → a one-frame flicker or double-exposure). After you quantize, walk the
-`cards` array in time order and assert all three, fixing the storyboard if any
-fails — do **not** just clamp at compile time:
+The silky default makes adjacent cards **deliberately overlap** by a slip
+window (`SLIP ≈ 0.55s`): card B slips in while card A slips out. This is the
+opposite of the old "leave a gap" rule. The incoming card MUST sit on a higher
+`data-track-index` so it covers the outgoing one during the slip. After you
+quantize, walk the `cards` array in time order and assert all three, fixing the
+storyboard (not clamping at compile time) if any fails:
 
-- **No accidental overlap:** `card[i].startSec ≥ card[i-1].endSec` (unless you
-  deliberately cross-fade — then set `data-track-index` for explicit z-order).
-- **A real gap for the cross-fade:** `card[i].startSec − card[i-1].endSec ≥
-  0.05s` (≥ ~1.5 frames) so the out-tween and in-tween don't collide.
-- **Minimum on-screen time:** `card[i].endSec − card[i].startSec ≥ 0.6s` — any
+- **Each card enters at the overlap point:** the timeline enter time for
+  `card[i]` is `card[i-1].endSec − SLIP` (it starts before the previous card is
+  fully gone). `data-track-index` strictly increases with card order so z-order
+  is unambiguous during the slip.
+- **Slip window in range:** keep `SLIP` within **0.45–0.7s**. Below 0.45 it
+  reads as a cut; above 0.7 the two cards smear together — pick ~0.55.
+- **Minimum on-screen time:** `card[i].endSec − card[i].startSec ≥ 0.6s` (and
+  realistically ≥ ~1.5s so its key info can be read — see guardrails). Any
   shorter reads as a flash, not a card. Merge it into a neighbor instead.
 
-When the source video keeps playing behind the cards (overlay/pip), this same
-check keeps card reveals from landing on top of each other mid-tween.
+When the source video keeps playing behind the cards (overlay/pip), the rising
+`data-track-index` is what keeps the overlapping slips layered correctly
+instead of flickering — don't add a gap to "fix" overlap; the overlap is the
+effect.
 
 #### Video Framing Reference (per `layout` value)
 

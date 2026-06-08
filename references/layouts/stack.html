@@ -14,20 +14,22 @@
     }
 
   GSAP target for #video-wrap (top band):
+    // Shared camera: reframe at the SAME START_SEC as the card slip, ease
+    // power3.inOut, so video + card move as one (see DESIGN_INDEX.md → Motion).
     landscape (1920×1080) — video top 52%:
       tl.to('#video-wrap',
         { left: 14, top: 14, width: 1892, height: 548,
-          duration: 0.6, ease: 'power2.inOut' }, START_SEC);
+          duration: 0.6, ease: 'power3.inOut' }, START_SEC);
 
     portrait (1080×1920) — video top 44%:
       tl.to('#video-wrap',
         { left: 0, top: 0, width: 1080, height: 844,
-          duration: 0.6, ease: 'power2.inOut' }, START_SEC);
+          duration: 0.6, ease: 'power3.inOut' }, START_SEC);
 
     4:5 (1080×1350) — y/h × 0.703:
       tl.to('#video-wrap',
         { left: 0, top: 0, width: 1080, height: 593,
-          duration: 0.6, ease: 'power2.inOut' }, START_SEC);
+          duration: 0.6, ease: 'power3.inOut' }, START_SEC);
 
   Notes
   - Sleek vertical: gives the speaker a wider stage on top.

@@ -18,20 +18,22 @@
     }
 
   GSAP target for #video-wrap during this card (paste in <script>):
+    // Shared camera: reframe at the SAME START_SEC as the card slip, ease
+    // power3.inOut, so video + card move as one (see DESIGN_INDEX.md → Motion).
     landscape (1920×1080):
       tl.to('#video-wrap',
         { left: 960, top: 0, width: 960, height: 1080,
-          duration: 0.6, ease: 'power2.inOut' }, START_SEC);
+          duration: 0.6, ease: 'power3.inOut' }, START_SEC);
 
     portrait (1080×1920) — flips to top/bottom:
       tl.to('#video-wrap',
         { left: 0, top: 960, width: 1080, height: 960,
-          duration: 0.6, ease: 'power2.inOut' }, START_SEC);
+          duration: 0.6, ease: 'power3.inOut' }, START_SEC);
 
     4:5 (1080×1350) — derive by ×0.703 on y/h:
       tl.to('#video-wrap',
         { left: 0, top: 675, width: 1080, height: 675,
-          duration: 0.6, ease: 'power2.inOut' }, START_SEC);
+          duration: 0.6, ease: 'power3.inOut' }, START_SEC);
 
   Notes
   - Card-host (from card.zone="side-panel") covers half the canvas;

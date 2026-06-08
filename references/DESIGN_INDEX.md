@@ -92,6 +92,61 @@ the composition's `#stage`. It is one-time HTML (not animated), but you can
 fade it in/out across cards. See each frame file for the placement snippet
 and the inline `<style>` it needs.
 
+## Motion（默认连续运动）
+
+The DEFAULT animation model is **silky / continuous**, not a PPT slideshow.
+Cards overlap and slip; nothing freezes; the camera rides along. Author every
+composition to this default unless a style/layout file overrides it.
+
+### Slip transition（默认转场，取代硬切）
+Adjacent cards **OVERLAP** by a slip window `SLIP ≈ 0.55s` — the incoming card
+starts before the outgoing one is gone. Outgoing card slips UP + blur + fade
+(`power2.in`); incoming card slips in from below and sits on a higher
+`data-track-index` so it paints on top:
+
+```js
+// outgoing (ends at T)
+tl.to(OUT, { opacity:0, y:-90, filter:'blur(14px)', duration:0.6, ease:'power2.in' }, T - SLIP);
+// incoming (starts at T - SLIP, overlaps)
+tl.fromTo(IN,
+  { opacity:0, y:120, filter:'blur(16px)', scale:0.94 },
+  { opacity:1, y:0,   filter:'blur(0px)',  scale:1, duration:0.7, ease:'expo.out' }, T - SLIP);
+// IN's card has a higher data-track-index than OUT
+```
+
+### Ambient drift（没有东西是死的）
+Every card carries an ambient yoyo loop so the frame keeps breathing. Amplitude
+tiny (**≤12px or ≤0.6°**), period **8–14s**, `yoyo`. Use a **FINITE** repeat
+sized to the composition — **never `repeat:-1`** (HyperFrames' deterministic
+capture forbids infinite repeats):
+
+```js
+// legSec = 11; repeat covers the whole film
+tl.to(SEL, { y:'+=10', duration:11, ease:'sine.inOut', repeat: Math.ceil(compDurationSec/11), yoyo:true }, T);
+```
+
+### Continuous easing
+- entrances → `expo.out` / `power3.out`
+- transitions & `#video-wrap` framing → `power3.inOut`（was `power2.inOut`）
+
+### Shared camera（#video-wrap 跟着卡片一起动）
+`#video-wrap` reframes at the **SAME start time** `T` as the card slip and uses
+the **matching ease** `power3.inOut`. The video and the card move as one camera
+move, never out of sync.
+
+### New data-anim primitives（旧的全部保留）
+| primitive | what it does | when to use |
+|---|---|---|
+| `settle` | damped entrance, `{opacity:0,y:28,filter:'blur(6px)'}`→`{...,ease:'expo.out'}` | **default for body content** — quiet, lands and holds |
+| `parallax-in` | entrance that keeps drifting after it lands | hero / panel that should feel alive |
+| `drift` | ambient forever loop (the recipe above) | give one persistent element gentle life |
+
+### 恰到好处 guardrails
+- **One** primary transition gesture per cut — don't stack slips.
+- **≤2** persistent motions on screen at once.
+- Ambient motion **never out-moves the speaker** — it's atmosphere, not the act.
+- Key info **holds still ≥1.5s** before it drifts or leaves.
+
 ## Decision guide (loose, not prescriptive)
 
 | video content | suggested combos |

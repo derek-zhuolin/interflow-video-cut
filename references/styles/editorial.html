@@ -94,7 +94,9 @@
 
   <div class="root">
     <span class="accents block-coral" data-anim="scale-pop" data-anim-at="0.15" data-anim-duration="0.5"></span>
-    <span class="accents dot-yellow" data-anim="fade-in" data-anim-at="0.35" data-anim-duration="0.4"></span>
+    <!-- demonstrates the global Motion default: one ambient drift per file -->
+    <span class="accents dot-yellow" data-anim="drift"
+          data-anim-axis="y" data-anim-amp="10" data-anim-period="9"></span>
     <span class="accents ring-blue" data-anim="fade-in" data-anim-at="0.55" data-anim-duration="0.4"></span>
 
     <span class="kicker" data-anim="fade-in" data-anim-at="0.05" data-anim-duration="0.4">TAKEAWAY</span>
@@ -103,7 +105,8 @@
       <span class="first">真</span>正的创造，从拒绝套路开始。
     </h1>
 
-    <p class="detail" data-anim="fade-in" data-anim-at="0.8" data-anim-duration="0.45">
+    <!-- settle: damped entrance, the global Motion default for body content -->
+    <p class="detail" data-anim="settle" data-anim-at="0.8" data-anim-duration="0.45"
       停止模仿、停止套模板，把每一个想法都当作<span class="hl">第一次表达</span>。
       只有这样，作品才会带上你的体温。
     </p>

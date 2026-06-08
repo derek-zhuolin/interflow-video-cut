@@ -174,7 +174,9 @@
     <div class="meta m-tl" data-anim="fade-in" data-anim-at="0.10" data-anim-duration="0.5">
       DEMO <span class="idx">[ 01 ]</span>
     </div>
-    <div class="meta m-tr" data-anim="fade-in" data-anim-at="0.15" data-anim-duration="0.5">
+    <!-- demonstrates the global Motion default: one ambient drift per file -->
+    <div class="meta m-tr" data-anim="drift"
+         data-anim-axis="y" data-anim-amp="8" data-anim-period="12">
       [ SPATIAL ]<br>GENERATED&nbsp;SCENE
     </div>
     <div class="meta m-bl" data-anim="fade-in" data-anim-at="0.20" data-anim-duration="0.5">
@@ -182,7 +184,8 @@
     </div>
 
     <div class="deck">
-      <div class="panel" data-anim="scale-pop" data-anim-at="0.30" data-anim-duration="0.8">
+      <!-- parallax-in: faux-3D panel enters then keeps drifting (global Motion default) -->
+      <div class="panel" data-anim="parallax-in" data-anim-at="0.30" data-anim-duration="0.8"
         <div class="ticks">
           <span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span>
         </div>

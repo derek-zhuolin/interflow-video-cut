@@ -18,8 +18,10 @@
   GSAP target for #video-wrap (full-bleed — usually unchanged):
     tl.to('#video-wrap',
       { left: 0, top: 0, width: COMPOSITION_W, height: COMPOSITION_H,
-        duration: 0.6, ease: 'power2.inOut' }, START_SEC);
+        duration: 0.6, ease: 'power3.inOut' }, START_SEC);
     // Use defaults: landscape 1920×1080 / portrait 1080×1920 / 4:5 1080×1350
+    // Shared camera: reframe at the SAME START_SEC as the card slip, ease
+    // power3.inOut, so video + card move as one camera move (see DESIGN_INDEX.md → Motion).
 
   Recommended card-host inline style (since zone="video-overlay" gives
   full-canvas bounds, you typically inset the actual card visual via CSS):

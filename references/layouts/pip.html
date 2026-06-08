@@ -20,7 +20,9 @@
       tl.set('#video-wrap', { className: 'video-wrapper pip-pill' }, START_SEC);
       tl.to('#video-wrap',
         { left: 1432, top: 28, width: 460, height: 258,
-          duration: 0.6, ease: 'power2.inOut' }, START_SEC);
+          duration: 0.6, ease: 'power3.inOut' }, START_SEC);
+      // Shared camera: same START_SEC as the card slip, ease power3.inOut
+      // (see DESIGN_INDEX.md → Motion); the ... blocks below inherit this ease.
 
     landscape, 9:16 source video (vertical phone footage):
       tl.to('#video-wrap',

@@ -27,12 +27,14 @@
     - EN 副标题用渐变描金：linear-gradient(#FFD9B0,#FF8A4C,#C8431F) + bg-clip:text
     - 数字/进度条用 accent 渐变；count-up + grow-x 标配
     - 颗粒层：SVG fractalNoise + mix-blend-mode:overlay + opacity .5
-  Composition-level（配方见本文件下方 Composition-level 段 + SKILL.md Step 9）
+  Composition-level（运动遵循全局 Motion 默认，见 DESIGN_INDEX.md → Motion）
+    本风格当初就是全局 Motion 默认的灵感来源 —— slip 转场（前后重叠 SLIP≈0.55s、
+    进场 y:120→0 + blur(16px)→0 + scale .94→1 / ease expo.out）、ambient drift、
+    shared camera 现在都是全局默认，这里不再重复，直接按 DESIGN_INDEX.md → Motion 铺。
+    本风格在全局默认之上**额外**要做的（STYLE-SPECIFIC）：
     - 舞台底铺 5 个彩雾 blob（filter:blur(90px) + screen），独立无限 sine 漂移
     - 每切一张卡，#aurora 容器 hue-rotate 阻尼偏移一次 → 全片"换色呼吸"
     - 暗角 vignette 压低四周，保证玻璃上文字对比度
-    - 转场是阻尼"滑移"非硬切：进场 y:120→0 + blur(16px)→0 + scale .94→1，ease expo.out，
-      出场上滑淡出模糊，前后重叠 ~0.6s
   Best with
     layouts: overlay (彩雾全屏最出彩), fullscreen hero, stack
     frames:  clean（全出血彩雾忌加装饰边框）

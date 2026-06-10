@@ -1,0 +1,195 @@
+<!--
+  Style: editorial-print — clean off-white paper · ink hairlines · hard offset
+                           shadow · restrained ghost serif · grain
+  ─────────────────────────────────────────────────────────────────────
+  The "press / magazine spread" look. UNLIKE the other 13 styles (which are
+  single text-takeaway cards), editorial-print is an ASSET-DRIVEN scene: the
+  images / video clips ARE the content, arranged like a printed spread. Use it
+  for B-roll montage moments (woven into a 口播 cut) OR for a standalone
+  no-speaker montage video. The full multi-asset primitive set (poster / photo-
+  grid / collage / logo-strip / print-stack) + the 3 signature transitions
+  (whip-pan / blinds-wipe / paper-flash) + asset-staging rules live in the
+  companion doc: references/editorial-print-montage.md  ← READ IT before authoring.
+
+  Tokens
+    paper   #F4F3EE   (clean warm off-white — page body + panels, less yellow)
+    ink     #1A1815   (near-black, all type + 2.5px borders + hairlines)
+    black   #000000   (the ink mark square + "focus" words)
+    stone   #908B7E   (muted labels / captions / ghost type)
+    white   #FFFFFF   (asset panel ground, under the image)
+  Signature (premium print-spread, restrained — NOT a busy collage)
+    · 2.5px solid ink borders on every asset panel
+    · HARD offset shadow `box-shadow: 20px 22px 0 rgba(26,24,21,.12)` (NO blur)
+    · faint grain overlay (one dot grid) at ~0.10 opacity — texture, not dirt
+    · restrained ghost serif word behind the headline (stone @ .08, sized down)
+    · ONE clean straight directional rule (no hand-drawn squiggle / arrow deco)
+    · uppercase Inter labels w/ wide letter-spacing as kickers / meta
+    · serif headline mixing thin (200) + focus (semibold) weights
+  Fonts  (only bundled fonts — DM Sans / Source Serif 4 are NOT shipped)
+    headline / ghost — ui-serif, "Songti SC", "Times New Roman", serif
+    labels / data    — 'Inter', ui-sans-serif, system-ui, sans-serif
+  Best with
+    layouts: this style ignores the video↔card split — every card is a
+             FULLSCREEN scene. For woven B-roll use card.zone="fullscreen"
+             and hide #video-wrap during the montage (see companion doc).
+    frames:  clean  (asset panels carry their OWN border — never add a
+             decorative frame on top; it double-borders and reads cheap)
+    content: 产品/项目展示 · 作品集 · 大事记 · 数据陈列 · 编辑专栏 · 公司介绍
+  Portrait: scale type ×1.3, shrink side padding (see montage doc). This ref
+            is the landscape (1920×1080) baseline like its 13 siblings.
+-->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>style · editorial-print</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0a0c12;
+               font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+  .stage { position: relative; width: 1920px; height: 1080px;
+           transform-origin: top left; transform: scale(0.5); overflow: hidden; }
+  .card-host { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+</style>
+</head>
+<body>
+<div class="stage"><div class="card-host">
+
+<div class="card" data-card-id="ref-editorial-print">
+  <style>
+    .card[data-card-id="ref-editorial-print"] { height: 100%; }
+    .card[data-card-id="ref-editorial-print"] .root {
+      --paper: #F4F3EE; --ink: #1A1815; --black: #000; --stone: #908B7E; --white: #FFF;
+      --font-head: ui-serif, "Songti SC", "Times New Roman", serif;
+      --font-ui: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+      width: 100%; height: 100%; position: relative; overflow: hidden;
+      box-sizing: border-box;
+      background: var(--paper); color: var(--ink);
+      font-family: var(--font-ui);
+      container-type: inline-size;
+      display: grid; grid-template-columns: 1fr 0.86fr; gap: 84px;
+      padding: 88px 104px 88px 104px;
+      isolation: isolate;
+    }
+    /* grain — one faint dot grid, the press-paper texture (subtle, not dirty) */
+    .card[data-card-id="ref-editorial-print"] .grain {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.10;
+      background-image:
+        radial-gradient(circle at 30% 30%, rgba(26,24,21,0.16) 0 1px, transparent 1px);
+      background-size: 26px 26px;
+    }
+    /* restrained ghost serif word behind the headline */
+    .card[data-card-id="ref-editorial-print"] .ghost {
+      position: absolute; left: 96px; top: 296px; z-index: 0;
+      font-family: var(--font-head); font-weight: 200; font-size: 168px; line-height: 0.8;
+      letter-spacing: -0.04em; color: rgba(144,139,126,0.08); pointer-events: none;
+    }
+    .card[data-card-id="ref-editorial-print"] .left {
+      position: relative; z-index: 1; min-width: 0;
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .card[data-card-id="ref-editorial-print"] .topline {
+      display: flex; align-items: center; gap: 24px;
+    }
+    .card[data-card-id="ref-editorial-print"] .mark {
+      width: 72px; height: 72px; flex: 0 0 auto;
+      background: var(--black); color: var(--paper);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-ui); font-size: 34px; font-weight: 800; letter-spacing: -0.04em;
+    }
+    .card[data-card-id="ref-editorial-print"] .label {
+      font-family: var(--font-ui); font-size: 19px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--stone);
+    }
+    .card[data-card-id="ref-editorial-print"] .headline {
+      margin: 84px 0 0; font-family: var(--font-head);
+      font-size: clamp(72px, 6.4cqi, 116px); line-height: 0.94; letter-spacing: -0.04em;
+      max-width: 100%; overflow-wrap: anywhere; text-wrap: balance;
+    }
+    .card[data-card-id="ref-editorial-print"] .headline .word { display: inline-block; margin-right: 16px; }
+    .card[data-card-id="ref-editorial-print"] .headline .thin  { font-weight: 200; }
+    .card[data-card-id="ref-editorial-print"] .headline .focus { color: var(--black); font-weight: 600; }
+    /* ONE clean straight directional rule — replaces the hand-drawn arrow deco */
+    .card[data-card-id="ref-editorial-print"] .arrow { width: 320px; height: 16px; margin-top: 44px; }
+    .card[data-card-id="ref-editorial-print"] .arrow path {
+      stroke: var(--ink); stroke-width: 2.5; fill: none; stroke-linecap: butt;
+    }
+    .card[data-card-id="ref-editorial-print"] .subcopy {
+      margin: 38px 0 0; font-size: 27px; line-height: 1.42; color: var(--ink);
+      max-width: 560px; overflow-wrap: anywhere;
+    }
+    .card[data-card-id="ref-editorial-print"] .meta {
+      margin-top: auto; display: grid; grid-template-columns: 1fr 180px; gap: 32px; align-items: end;
+    }
+    .card[data-card-id="ref-editorial-print"] .meta-card {
+      border-top: 2.5px solid var(--ink); padding-top: 18px;
+      font-size: 22px; line-height: 1.3; color: var(--stone); letter-spacing: 0.01em;
+    }
+    .card[data-card-id="ref-editorial-print"] .rule { height: 2.5px; background: var(--ink); align-self: end; }
+    /* poster panel — the asset slot. HARD offset shadow, 2.5px border, no blur. */
+    .card[data-card-id="ref-editorial-print"] .poster {
+      position: relative; z-index: 1; align-self: center;
+      height: 800px; background: var(--white); border: 2.5px solid var(--ink);
+      padding: 16px; box-shadow: 20px 22px 0 rgba(26,24,21,0.12); overflow: hidden;
+    }
+    /* the actual <img>/<video> goes here; placeholder shows the slot + aspect */
+    .card[data-card-id="ref-editorial-print"] .slot {
+      position: relative;
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(150deg, #ECEAE2 0%, #E0DDD2 100%);
+      color: var(--stone); font-family: var(--font-ui);
+      font-size: 18px; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase;
+    }
+    .card[data-card-id="ref-editorial-print"] .slot span {
+      position: absolute; left: 22px; bottom: 20px; z-index: 1;
+    }
+    /* registration hairline cross — quiet print-mark, replaces the busy hatch */
+    .card[data-card-id="ref-editorial-print"] .slot::before,
+    .card[data-card-id="ref-editorial-print"] .slot::after {
+      content: ''; position: absolute; left: 50%; top: 50%;
+      background: rgba(26,24,21,0.14); transform: translate(-50%, -50%);
+    }
+    .card[data-card-id="ref-editorial-print"] .slot::before { width: 1px; height: 64px; }
+    .card[data-card-id="ref-editorial-print"] .slot::after  { width: 64px; height: 1px; }
+  </style>
+
+  <div class="root">
+    <div class="grain"></div>
+    <div class="ghost" data-anim="drift" data-anim-axis="x" data-anim-amp="12" data-anim-period="12">WORK</div>
+
+    <div class="left">
+      <div class="topline">
+        <div class="mark" data-anim="scale-pop" data-anim-at="0.12" data-anim-duration="0.45">I</div>
+        <div class="label" data-anim="slide-in" data-anim-from="left" data-anim-at="0.24" data-anim-duration="0.5">INTERFLOW / 作品流 — 2026</div>
+      </div>
+
+      <h1 class="headline" data-anim="kinetic-chars" data-anim-at="0.36" data-anim-duration="0.6" data-anim-stagger="0.08" data-anim-pattern="pop">
+        <span class="word thin">把</span><span class="word focus">想法</span><span class="word thin">排成</span><span class="word focus">可读的画面</span>
+      </h1>
+
+      <svg class="arrow" viewBox="0 0 320 16" aria-hidden="true"
+           data-anim="draw-path" data-anim-at="0.92" data-anim-duration="0.7">
+        <path d="M2 8 L300 8 M288 2 L314 8 L288 14" />
+      </svg>
+
+      <p class="subcopy" data-anim="settle" data-anim-at="1.2" data-anim-duration="0.5">
+        暖纸、硬投影、墨线网格——一堆素材排成印刷感的编辑跨页，而不是堆文字。
+      </p>
+
+      <div class="meta">
+        <div class="meta-card" data-anim="fade-in" data-anim-at="1.4" data-anim-duration="0.45">真实素材 · 不编造光鲜 · 留白即呼吸</div>
+        <div class="rule" data-anim="grow-x" data-anim-at="1.5" data-anim-duration="0.5" data-anim-target-w="200"></div>
+      </div>
+    </div>
+
+    <!-- POSTER asset slot — drop a real <img src="assets/…"> or <video> in .slot.
+         Hard offset shadow + 3px border is the signature; do NOT add a frame deco. -->
+    <div class="poster" data-anim="settle" data-anim-from="right" data-anim-at="0.3" data-anim-duration="0.7">
+      <div class="slot"><span>ASSET · 4:5</span></div>
+    </div>
+  </div>
+</div>
+
+</div></div>
+</body>
+</html>

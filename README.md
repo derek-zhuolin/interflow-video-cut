@@ -14,7 +14,8 @@
 视觉，然后**直接写 HTML 卡片**并渲染成可发布的竖屏/横屏成片。
 
 - 没有固定模板套路——卡片从文字稿真实内容里长出来
-- 13 种可选视觉风格 × 4 种布局 × 3 种视频边框，自由组合
+- **9 种精选视觉风格** × 4 种布局 × 3 种视频边框，自由组合；旗舰 **暗夜星河** `nebula-glass` 是黑底双星粒子场 + 磨砂玻璃 + 归藏排版
+- **自动匹配视觉风格**——读源视频的明暗/冷暖，自动选浅色（白天）或深色（黑夜）风格，也可手动覆盖
 - **默认悬浮面板留白**——视频和卡片都是带圆角、四周留距的悬浮窗，不顶天立地铺满（更有空间感，避免「太满」）
 - 输出 9:16 / 16:9 / 4:5，适配抖音 / 小红书 / YouTube / Instagram
 - 结尾自带 **Interflow** 俱乐部落款（一句视频回扣 + wordmark + 一句延伸 + slogan，可一键换成你自己的品牌）
@@ -44,7 +45,8 @@ input.mp4
 
 | 依赖 | 用途 | 安装 |
 |---|---|---|
-| `ffmpeg` / `ffprobe` | 抽音轨、读元数据、烘焙旋转 | `brew install ffmpeg` |
+| `ffmpeg` / `ffprobe` | 抽音轨、读元数据、烘焙旋转、自动配色匹配 | `brew install ffmpeg` |
+| `python3`（标准库） | 自动日夜配色匹配 `scripts/auto-style.py` | 系统自带 |
 | Node.js + `npx` | 跑 vtake / hyperframes CLI | nodejs.org |
 | `@notedit/vtake` (CLI) | extract / transcribe 引擎 | 首次自动 `npx` 下载 |
 | `hyperframes` (CLI) | HTML → MP4 渲染引擎 | 首次自动 `npx` 下载 |
@@ -55,27 +57,32 @@ input.mp4
 
 ## 使用
 
-调用后，skill 会先问你 5 个视觉决策（自动推荐匹配源视频的画幅）：
+调用后，skill 会先问你 5 个视觉决策（自动推荐：画幅匹配源视频比例，风格匹配源视频明暗/冷暖）：
 
 1. **画幅** — 16:9 / 9:16 / 4:5
 2. **布局** — split 左右 / stack 上下 / pip 画中画 / overlay 全屏浮层
-3. **风格** — 4 大类，见下
+3. **风格** — 4 大类，见下（亮视频自动推浅色、暗视频自动推深色，可手动覆盖）
 4. **卡片数量** — 按时长+密度自动推断，或自定义
 5. **运镜节奏** — 固定人像（人脸始终在画面，稳）或起伏运镜（人像大→缩 PiP→消失做全屏 highlight→切回，有张力）
 
 然后它设计 storyboard、逐张写卡、拼装，**先开本地预览让你看**，你满意了才渲染成片。
 
-## 13 种视觉风格
+## 9 种视觉风格（中文名一眼挑对）
 
-| 大类 | 风格 |
+选风格时按「内容想要什么感觉」挑，分 4 大类：
+
+| 大类 | 风格（中文名 · key） |
 |---|---|
-| 柔和极光 | `pastel-aura`（象牙白 + 极光渐变 + 衬线 + 白浮卡） |
-| 温暖纸感 | `academic` `editorial` `whiteboard` `xhs` |
-| 冷峻临床 | `audit` `swiss` `terminal` `minimal` |
-| 实验电影感 | `geom` `spotlight` `aurora-glass` `spatial`（暗场太空舱：深空暖光 + 伪 3D 悬浮面板 + 取景框仪表盘字 + 颗粒） |
+| **暗调电影感**（黑底·高级·有动态） | **暗夜星河** `nebula-glass`（旗舰：黑底双星粒子场 + 玻璃 + 归藏排版，最高级最科技）· **玻璃拟态** `glass`（简单两色 + 磨砂玻璃，半透明干净）· **暖光太空** `spatial`（黑底暖橙光，温暖有空间感）· **撞色大字** `geom`（黑底亮色块超大字，大胆有冲击） |
+| **干净专业**（数据·报告·严肃） | **瑞士网格** `swiss`（白底红点大字，专业权威）· **黑白极简** `minimal`（纯黑白大字 + 大留白）· **代码终端** `terminal`（黑底绿字代码风，技术极客） |
+| **浅色清爽**（日常·白天·轻松） | **柔光浅色** `pastel-aura`（浅色柔和，白天/日常感） |
+| **杂志素材**（作品集·素材排版） | **杂志印刷** `editorial-print`（把照片/素材排成杂志跨页，不是文字卡） |
 
-完整目录、布局/边框矩阵、组合建议见 [`references/DESIGN_INDEX.md`](references/DESIGN_INDEX.md)。
-每种风格都是一个自包含的 HTML 参考卡，可直接复制改写。
+完整中文词库、布局/边框矩阵、组合建议、自动日夜匹配规则见 [`references/DESIGN_INDEX.md`](references/DESIGN_INDEX.md)。
+每种风格都是一个自包含的 HTML 参考卡，可直接复制改写。两个特别说明：
+
+- **暗夜星河 `nebula-glass`** 的粒子场是 composition 级**确定性 canvas**（写成时间闭式 `pos=f(t)` 并由 GSAP 时间轴驱动，逐帧可复现），整段可粘贴的配方在它的文件头注释里。
+- **杂志印刷 `editorial-print`** 是唯一的「素材驱动」风格——多素材排版原语、签名转场、素材入栈规则在 [`references/editorial-print-montage.md`](references/editorial-print-montage.md)。
 
 ## 换成你自己的品牌落款
 
@@ -122,7 +129,7 @@ input.mp4
 **[vtake](https://github.com/notedit/vtake-skills)** —— 是他先跑通了「用 Claude Code 一键剪口播视频」这条路。
 Interflow Video Cut 在底层也直接调用了他维护的 `@notedit/vtake` CLI 做转录与抽取。
 
-在此基础上，本项目重做了卡片设计系统（13 种视觉风格）、布局 / 画幅决策流程和俱乐部落款。感谢 Leo 的开源。
+在此基础上，本项目重做了卡片设计系统（9 种精选视觉风格 + 自动日夜配色匹配）、布局 / 画幅决策流程和俱乐部落款。感谢 Leo 的开源。
 
 > *Inspired by and built on top of [vtake](https://github.com/notedit/vtake-skills) by [Leo Xiang (@notedit)](https://github.com/notedit).*
 

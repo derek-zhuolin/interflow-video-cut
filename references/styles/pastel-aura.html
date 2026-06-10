@@ -1,36 +1,42 @@
 <!--
-  Style: pastel-aura (柔和极光) — ivory + aura gradients · serif headlines · white floating cards
+  Style: pastel-aura (柔和极光) — ivory ground · COOL aura gradients · modern sans · floating white card
   ─────────────────────────────────────────────────────────────────────
-  浅色 / 柔和分支：象牙白底 + 极光渐变 + 衬线大标题 + 白色浮卡柔投影。
-  适合个人分享、品牌叙事、AI/SaaS 调性。pip 用白描边胶囊；尾卡见 card-cta。
+  系统的「日间 / 浅色锚点」（亮视频自动匹配）：必须 LIGHT & airy。
+  象牙近白底 + 冷调极光雾团（薄荷 / 薰衣草 / 长春花蓝 / 冷青）+ 现代无衬线强字阶
+  + 悬浮白卡柔投影。区别于 glass / nebula-glass（暗底磨砂玻璃）：这是高级
+  light-mode SaaS / 品牌卡的语气 —— 干净、克制、负空间、柔光。
+  ⚠️ 2026-06 重做：暖桃/珊瑚已废弃（Derek 不要暖色冲突）；衬线主标题→现代 sans。
 
-  Tokens
-    bg       #FAF7F2   (ivory)
-    ink      #1F2433   (dark navy ink — headlines & emphasis)
-    ink-soft #6A6E7E   (muted body text)
-    gold     #A98F5E   (kicker / accents / diamonds)
-    mint     #D6EDDD   (aura gradient 1 + highlight under keywords)
-    lavender #DCD3F2   (aura gradient 2 + highlight under keywords)
-    peach    #F7DFD3   (aura gradient 3)
-    blue     #D8E4F5   (aura gradient 4, occasional)
-  Fonts
-    headlines — Georgia, 'Songti SC', 'STSong', 'LXGW WenKai TC', serif (weight 900)
-    body / kicker — 'Inter', ui-sans-serif, "PingFang SC", sans-serif
+  Tokens（全冷调，无任何暖色）
+    bg        #FAF8F4   (ivory near-white，干净不发黄)
+    ink       #1E2435   (deep slate-navy — 标题 & 强调)
+    ink-soft  #6B7184   (muted body)
+    ink-faint rgba(30,36,53,.34)
+    accent    #5E6AD2   (cool periwinkle/indigo — kicker / 菱形 / 细线 / 运算符)
+    accent-cy #5BB5C9   (soft cyan — 次高光端)
+    mint      #D6EDDD   (aura 1 + 关键词衬底)
+    lavender  #DCD3F2   (aura 2 + 关键词衬底)
+    periwink  #D6DEF8   (aura 3 — 取代旧 peach)
+    cyan      #D2ECF0   (aura 4，点缀)
+  Fonts（现代 sans 为主，禁衬线主标题）
+    headlines — 'Inter', "PingFang SC", system-ui, sans-serif（weight 800，负字距）
+    body / kicker / meta — 'Inter', "PingFang SC", sans-serif（500/600，字距）
   Signature moves
-    - 每张卡的 aura 渐变位置不同（mint/lavender/peach 换角落），全片有流动感
-    - 关键词用淡彩色块衬底：box-shadow: inset 0 -Npx 0 rgba(mint/lavender, .8)
-    - 白色浮卡：background #fff + box-shadow 0 30px 70px -28px rgba(31,36,51,.28)
-    - 深色强调块：background var(--ink) + 白字（每张卡最多一个，做视觉锚点）
-    - kicker：gold + uppercase + letter-spacing .32em + 渐变细线 grow-x
-  Composition-level（按 SKILL.md Step 9 的 composition 模板自行铺设）
-    - 舞台背景也是 aura 渐变（卡片切换时不露黑底）
+    - 悬浮白卡（.pane）：#fff + 多层柔投影 + 1px 内描边 + 顶部高光 + 左侧冷 accent 标尺
+    - 每张卡 aura 渐变换角落（mint/lavender/periwink），全片流动感，但永远浅
+    - kicker：periwinkle + uppercase + letter-spacing .34em + 渐变细线 grow-x
+    - 关键词淡彩色块衬底：inset 0 -Npx 0 rgba(mint/lavender,.85)（冷调）
+    - 深色锚点 chip：background var(--ink) + 浅字（每卡最多一个，做视觉锚点）
+    - 发丝线 hairline rule + 字距 meta，排版向 nebula/aurora 看齐
+  Composition-level（按 SKILL.md Step 9 自行铺设）
+    - 舞台背景也是冷 aura 渐变（卡片切换不露底）
     - pip 白描边：0 0 0 5px rgba(255,255,255,.95) + 柔投影
-    - 字幕：白色圆角胶囊 + 金色菱形前缀 + ink 文字
-    - 片尾：fade-to-black overlay 最后 0.5s
+    - 字幕：白色圆角胶囊 + periwinkle 菱形前缀 + ink 文字
+    - 片尾：柔光收束（避免 fade-to-black 破坏浅色调性，可 fade-to-white）
   Best with
     layouts: pip (推荐), stack, overlay
-    frames:  clean (白描边由 pip CSS 提供，不需要额外 frame)
-    content: 个人分享 / 品牌叙事 / AI·SaaS 调性 / 愿景类收尾
+    frames:  clean (白描边由 pip CSS 提供，不需额外 frame)
+    content: 个人分享 / 品牌叙事 / AI·SaaS 调性 / 愿景类收尾 / 明亮素材
 -->
 <!doctype html>
 <html lang="zh-CN">
@@ -38,7 +44,7 @@
 <meta charset="utf-8" />
 <title>style · pastel-aura (柔和极光)</title>
 <style>
-  html, body { margin: 0; padding: 0; background: #e8e6e1;
+  html, body { margin: 0; padding: 0; background: #efece6;
                font-family: ui-sans-serif, system-ui, sans-serif; }
   .stage { position: relative; width: 1920px; height: 1080px;
            transform-origin: top left; transform: scale(0.5); overflow: hidden; }
@@ -51,94 +57,163 @@
 <div class="card" data-card-id="ref-pastel-aura">
   <style>
     .card[data-card-id="ref-pastel-aura"] .root {
-      --ink: #1F2433; --ink-soft: #6A6E7E; --gold: #A98F5E;
-      --font-serif: Georgia, 'Songti SC', 'STSong', 'LXGW WenKai TC', serif;
+      --ink: #1E2435; --ink-soft: #6B7184; --ink-faint: rgba(30,36,53,.34);
+      --accent: #5E6AD2; --accent-cy: #5BB5C9;
+      --mint: #D6EDDD; --lavender: #DCD3F2; --periwink: #D6DEF8; --cyan: #D2ECF0;
       --font-sans: 'Inter', ui-sans-serif, system-ui, "PingFang SC", "Hiragino Sans GB", sans-serif;
-      width: 100%; height: 100%; position: relative; overflow: hidden;
+      width: 100%; height: 100%; position: relative; overflow: hidden; box-sizing: border-box;
+      /* 冷调极光底（薄荷 / 薰衣草 / 长春花蓝），近白象牙打底 */
       background:
-        radial-gradient(ellipse 52% 64% at 88% 14%, rgba(214,237,221,.85) 0%, transparent 62%),
-        radial-gradient(ellipse 48% 60% at 6% 88%, rgba(220,211,242,.75) 0%, transparent 62%),
-        radial-gradient(ellipse 40% 50% at 92% 92%, rgba(247,223,211,.65) 0%, transparent 60%),
-        #FAF7F2;
+        radial-gradient(ellipse 54% 66% at 90% 10%,  rgba(214,237,221,.92) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 62% at 4% 92%,   rgba(220,211,242,.82) 0%, transparent 60%),
+        radial-gradient(ellipse 44% 54% at 94% 96%,  rgba(214,222,248,.78) 0%, transparent 60%),
+        radial-gradient(ellipse 38% 46% at 30% 6%,   rgba(210,236,240,.50) 0%, transparent 60%),
+        #FAF8F4;
       color: var(--ink); font-family: var(--font-sans);
-      padding: 64px 80px 150px 80px; box-sizing: border-box;
+      display: flex; align-items: center; justify-content: center;
+      padding: 72px 84px;
+    }
+    /* 悬浮白卡 */
+    .card[data-card-id="ref-pastel-aura"] .pane {
+      position: relative; width: 100%; height: 100%; max-width: 1640px;
+      border-radius: 40px; background: #ffffff;
+      padding: 76px 88px 72px;
+      box-sizing: border-box;
       display: flex; flex-direction: column;
+      box-shadow:
+        0 48px 110px -36px rgba(36,42,72,.30),
+        0 14px 40px -18px rgba(36,42,72,.14),
+        inset 0 1.5px 0 rgba(255,255,255,.9),
+        0 0 0 1px rgba(30,36,53,.05);
+      overflow: hidden;
     }
-    /* kicker：金色 + 大字距 + 渐变细线 */
+    /* 顶部柔高光 */
+    .card[data-card-id="ref-pastel-aura"] .pane::before {
+      content: ''; position: absolute; left: 0; right: 0; top: 0; height: 38%;
+      background: linear-gradient(180deg, rgba(94,106,210,.05), transparent);
+      pointer-events: none;
+    }
+    /* 左侧冷 accent 标尺 */
+    .card[data-card-id="ref-pastel-aura"] .pane::after {
+      content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 5px;
+      background: linear-gradient(180deg, var(--accent), rgba(94,106,210,0));
+      border-radius: 5px;
+    }
+    /* 顶部 meta 行 */
+    .card[data-card-id="ref-pastel-aura"] .topmeta {
+      display: flex; justify-content: space-between; align-items: center;
+      font: 600 19px/1 var(--font-sans); letter-spacing: .30em; text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .card[data-card-id="ref-pastel-aura"] .topmeta .rec {
+      display: flex; align-items: center; gap: 11px; color: var(--accent);
+    }
+    .card[data-card-id="ref-pastel-aura"] .topmeta .rec .d {
+      width: 9px; height: 9px; border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(94,106,210,.16);
+    }
+    /* kicker：periwinkle + 大字距 + 渐变细线 */
     .card[data-card-id="ref-pastel-aura"] .kicker {
-      display: flex; align-items: center; gap: 22px;
-      font: 600 22px/1 var(--font-sans); color: var(--gold);
-      letter-spacing: .32em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 18px; margin-top: 54px;
+      font: 600 22px/1 var(--font-sans); color: var(--accent);
+      letter-spacing: .34em; text-transform: uppercase;
     }
-    .card[data-card-id="ref-pastel-aura"] .kicker .dim { color: var(--ink-soft); letter-spacing: .2em; }
+    .card[data-card-id="ref-pastel-aura"] .kicker .dia {
+      width: 12px; height: 12px; background: var(--accent);
+      transform: rotate(45deg); box-shadow: 0 0 0 4px rgba(94,106,210,.14);
+    }
+    .card[data-card-id="ref-pastel-aura"] .kicker .dim {
+      color: var(--ink-soft); letter-spacing: .2em; font-weight: 500;
+    }
     .card[data-card-id="ref-pastel-aura"] .kicker-line {
-      width: 520px; height: 3px; margin-top: 22px;
-      background: linear-gradient(90deg, var(--gold), rgba(169,143,94,.05));
-      border-radius: 2px;
+      width: 0; height: 3px; margin-top: 24px;
+      background: linear-gradient(90deg, var(--accent), rgba(94,106,210,.04));
+      border-radius: 3px;
     }
-    /* 衬线大标题 + 淡彩色块衬关键词 */
+    /* 现代 sans 大标题 + 冷彩色块衬关键词 */
     .card[data-card-id="ref-pastel-aura"] .headline {
-      margin: auto 0 0 0;
-      font: 900 132px/1.2 var(--font-serif);
-      color: var(--ink); letter-spacing: -.01em;
+      margin: 40px 0 0 0;
+      font: 800 122px/1.14 var(--font-sans);
+      color: var(--ink); letter-spacing: -.025em;
+      overflow-wrap: anywhere; text-wrap: balance;
     }
     .card[data-card-id="ref-pastel-aura"] .headline .hl-mint {
-      box-shadow: inset 0 -26px 0 rgba(214,237,221,.9);
+      box-shadow: inset 0 -24px 0 rgba(214,237,221,.95);
     }
     .card[data-card-id="ref-pastel-aura"] .headline .hl-lav {
-      box-shadow: inset 0 -26px 0 rgba(220,211,242,.8);
+      box-shadow: inset 0 -24px 0 rgba(220,211,242,.9);
     }
-    .card[data-card-id="ref-pastel-aura"] .headline .bang { color: var(--gold); }
-    /* 白色浮卡 chips */
+    .card[data-card-id="ref-pastel-aura"] .headline .bang { color: var(--accent); }
+    /* 发丝线 */
+    .card[data-card-id="ref-pastel-aura"] .rule {
+      height: 1.5px; width: 100%; margin: 48px 0 0;
+      background: linear-gradient(90deg, rgba(30,36,53,.16), rgba(30,36,53,0));
+    }
+    /* chips 行 */
     .card[data-card-id="ref-pastel-aura"] .chips {
-      display: flex; align-items: center; gap: 28px;
-      margin-top: 64px;
+      display: flex; align-items: center; gap: 26px;
+      margin-top: 44px;
     }
     .card[data-card-id="ref-pastel-aura"] .chip {
-      padding: 34px 52px; border-radius: 20px;
-      background: #fff;
-      box-shadow: 0 30px 70px -28px rgba(31,36,51,.28), 0 0 0 1px rgba(31,36,51,.04);
-      font: 800 44px/1 var(--font-serif); color: var(--ink);
+      padding: 30px 50px; border-radius: 18px;
+      background: linear-gradient(180deg, #fff, #F6F7FB);
+      box-shadow: 0 16px 36px -22px rgba(36,42,72,.30), inset 0 0 0 1px rgba(30,36,53,.07);
+      font: 700 44px/1 var(--font-sans); color: var(--ink); letter-spacing: -.01em;
     }
     /* 深色锚点块（每卡最多一个） */
     .card[data-card-id="ref-pastel-aura"] .chip.anchor {
-      background: var(--ink); color: #FAF7F2;
-      box-shadow: 0 36px 80px -28px rgba(31,36,51,.55);
+      background: var(--ink); color: #FAF8F4;
+      box-shadow: 0 24px 56px -24px rgba(30,36,53,.55), inset 0 0 0 1px rgba(255,255,255,.06);
     }
     .card[data-card-id="ref-pastel-aura"] .op {
-      font: 300 56px/1 var(--font-sans); color: var(--gold);
+      font: 300 50px/1 var(--font-sans); color: var(--accent);
     }
     /* 底部 meta 行 */
     .card[data-card-id="ref-pastel-aura"] .meta {
-      display: flex; align-items: center; gap: 24px;
-      margin-top: auto; padding-top: 32px;
-      border-top: 1px solid rgba(31,36,51,.1);
+      display: flex; align-items: center; gap: 18px;
+      margin-top: auto; padding-top: 34px;
       font: 500 28px/1.6 var(--font-sans); color: var(--ink-soft);
+    }
+    .card[data-card-id="ref-pastel-aura"] .meta .tag {
+      flex: none; padding: 8px 18px; border-radius: 999px;
+      background: rgba(94,106,210,.10); color: var(--accent);
+      font: 700 22px/1 var(--font-sans); letter-spacing: .02em;
     }
     .card[data-card-id="ref-pastel-aura"] .meta .hl { color: var(--ink); font-weight: 700; }
   </style>
 
   <div class="root">
-    <div class="kicker" data-anim="fade-in" data-anim-at="0.15" data-anim-duration="0.45">
-      <span>Reference Card</span><span class="dim">&diams; 柔和极光</span>
-    </div>
-    <div class="kicker-line"></div>
+    <div class="pane">
+      <div class="topmeta">
+        <span data-anim="fade-in" data-anim-at="0.12" data-anim-duration="0.5">INTERFLOW · PASTEL</span>
+        <span class="rec" data-anim="fade-in" data-anim-at="0.22" data-anim-duration="0.5"><span class="d"></span> 16:9 · DAYLIGHT</span>
+      </div>
 
-    <h1 class="headline" data-anim="fade-in" data-anim-at="0.45" data-anim-duration="0.5">
-      让表达更加<span class="hl-mint">自由</span><span class="bang">，</span><br/>
-      更加<span class="hl-lav">轻松</span>
-    </h1>
+      <div class="kicker" data-anim="fade-in" data-anim-at="0.30" data-anim-duration="0.45">
+        <span class="dia"></span><span>Reference Card</span><span class="dim">柔和极光</span>
+      </div>
+      <div class="kicker-line" data-anim="grow-x" data-anim-at="0.42" data-anim-duration="0.7" data-anim-target-w="520"></div>
 
-    <div class="chips" data-anim="fade-in" data-anim-at="1.0" data-anim-duration="0.5">
-      <div class="chip anchor">Claude</div>
-      <div class="op">+</div>
-      <div class="chip">飞书</div>
-      <div class="op">+</div>
-      <div class="chip">好的 Skill</div>
-    </div>
+      <h1 class="headline" data-anim="slide-in" data-anim-at="0.55" data-anim-duration="0.8"
+          data-anim-from="bottom" data-anim-distance="36">
+        让表达更加<span class="hl-mint">自由</span><span class="bang">，</span><br/>
+        更加<span class="hl-lav">轻松</span>
+      </h1>
 
-    <div class="meta" data-anim="fade-in" data-anim-at="1.5" data-anim-duration="0.5">
-      <span class="hl">这是占位内容</span> ── 复制 tokens 和结构，换成你的真实 takeaway
+      <div class="rule" data-anim="grow-x" data-anim-at="1.05" data-anim-duration="0.7" data-anim-target-w="1464"></div>
+
+      <div class="chips" data-anim="fade-in" data-anim-at="1.15" data-anim-duration="0.5">
+        <div class="chip anchor">Claude</div>
+        <div class="op">+</div>
+        <div class="chip">飞书</div>
+        <div class="op">+</div>
+        <div class="chip">好的 Skill</div>
+      </div>
+
+      <div class="meta" data-anim="fade-in" data-anim-at="1.55" data-anim-duration="0.5">
+        <span class="tag">占位</span>
+        <span><span class="hl">复制 tokens 和结构</span> ── 换成你的真实 takeaway</span>
+      </div>
     </div>
   </div>
 </div>

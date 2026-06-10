@@ -5,7 +5,7 @@
     （noomo 暗场悬浮产品 + 杂志 3D 隧道 + Juan Mora 暖桃黏土世界）。三者表面
     各异，底层共享：被「单一氛围色」笼罩的、有电影级打光的「3D 空间纵深」，
     配极小的「仪表盘式」编辑系统字（[01] / [GENERATED] / 取景框角标）+ 颗粒肌理。
-    本风格是 aurora-glass 的「立体化升级」：同样暗调电影感，但多了景深、
+    本风格是 glass 的「立体化升级」：同样暗调电影感，但多了景深、
     取景框 chrome 和半调颗粒。真 3D（WebGL）卡片做不了，这里用 CSS
     perspective + 多层投影 + 径向边缘光「逼真伪造」体积感。
 
@@ -15,7 +15,7 @@
     ink        #F4ECE2   (主文字：暖白)
     ink-dim    rgba(244,236,226,.55)
     ink-faint  rgba(244,236,226,.28)
-    accent     #FF8A4C   (暖橙 —— rim light / kicker / 数字 / 高光，呼应 aurora-glass)
+    accent     #FF8A4C   (暖橙 —— rim light / kicker / 数字 / 高光，呼应 glass)
     accent-hi  #FFB088   (桃，辉光外缘)
     panel      #161210   (悬浮面板实体，暗暖)
     panel-edge rgba(255,255,255,.10)
@@ -30,8 +30,11 @@
     - 暖橙 rim light：面板 ::after 用 radial-gradient(#FF8A4C→透明) 从背后
       透出一圈边缘光，是整张卡的「光源」，必须比卡面亮
     - 取景框角标（viewfinder ticks）：四角 L 形细描边，呼应相机/工程取景器
-    - 巨字压场：display 标题超大负字距，EN 副标用渐变描金
-      linear-gradient(#FFD9B0,#FF8A4C,#C8431F) + bg-clip:text
+    - 归藏式强字阶（向 nebula/aurora gold standard 看齐）：钻石 kicker（暖橙
+      菱形 + letter-spaced EN + zh 标签）→ 巨字标题（超大负字距）→ EN 副标渐变
+      描金 linear-gradient(#FFD9B0,#FF8A4C,#C8431F) + bg-clip:text → 一道暖调
+      发丝线（rgba(255,176,136) 渐隐）→ 底排「空心巨号 [01] + 说明」
+      （-webkit-text-stroke 暖描边，呼应 nebula 招牌空心序号）
     - 颗粒 + 半调：SVG fractalNoise（overlay）+ 极淡的 radial 点阵 halftone
     - 暗角 vignette 压低四周，把视线聚到悬浮面板上
   Composition-level（无单独 assets 配方，规则写在这里）
@@ -108,7 +111,7 @@
         linear-gradient(160deg, rgba(255,255,255,.06), transparent 42%),
         var(--panel);
       border: 1px solid var(--panel-edge);
-      transform: rotateX(6deg) rotateY(-9deg) translateZ(0);
+      transform: rotateX(5deg) rotateY(-7deg) translateZ(0);
       transform-style: preserve-3d;
       box-shadow:
         0 4px 0 rgba(0,0,0,.5),                 /* 近处硬边 */
@@ -141,32 +144,46 @@
     .card[data-card-id="ref-spatial"] .meta.m-bl { left: 64px; bottom: 56px; color: var(--ink-faint); }
     .card[data-card-id="ref-spatial"] .meta .idx { color: var(--accent); }
 
-    /* 面板内容 */
+    /* 面板内容 —— 归藏式强字阶：钻石 kicker / 巨字 / 描金副标 / 发丝线 / 空心序号 */
     .card[data-card-id="ref-spatial"] .kicker {
-      font: 600 22px/1 var(--font-mono); letter-spacing: .4em; text-transform: uppercase;
-      color: var(--ink-dim); margin-bottom: 34px;
+      display: flex; align-items: center; gap: 16px; margin-bottom: 30px;
+      font: 600 21px/1 var(--font-mono); letter-spacing: .38em; text-transform: uppercase;
+      color: var(--ink-dim);
     }
-    .card[data-card-id="ref-spatial"] .kicker .dot { color: var(--accent); }
+    .card[data-card-id="ref-spatial"] .kicker .dia {
+      width: 12px; height: 12px; background: var(--accent); transform: rotate(45deg);
+      box-shadow: 0 0 16px var(--accent);
+    }
+    .card[data-card-id="ref-spatial"] .kicker .zh {
+      font-family: var(--font-han); letter-spacing: .16em; color: var(--ink); font-weight: 600;
+    }
     .card[data-card-id="ref-spatial"] .title {
-      font: 700 138px/1.0 var(--font-han); letter-spacing: -.03em; color: var(--ink); margin: 0;
-      text-shadow: 0 6px 50px rgba(0,0,0,.4);
+      font: 700 120px/1.02 var(--font-han); letter-spacing: -.03em; color: var(--ink); margin: 0;
+      text-shadow: 0 6px 50px rgba(0,0,0,.4); overflow-wrap: anywhere;
     }
     .card[data-card-id="ref-spatial"] .sub-en {
-      font: 700 44px/1 var(--font-sans); letter-spacing: .14em; text-transform: uppercase; margin-top: 28px;
+      font: 700 40px/1 var(--font-sans); letter-spacing: .16em; text-transform: uppercase; margin-top: 22px;
       background: linear-gradient(92deg, #FFD9B0, #FF8A4C 55%, #C8431F);
       -webkit-background-clip: text; background-clip: text; color: transparent;
     }
-    .card[data-card-id="ref-spatial"] .enter-row {
-      display: flex; align-items: center; gap: 24px; margin-top: 58px;
+    /* 发丝线（暖调，向 gold standard 看齐） */
+    .card[data-card-id="ref-spatial"] .rule {
+      height: 1.5px; width: 100%; margin: 42px 0 34px;
+      background: linear-gradient(90deg, rgba(255,176,136,.5), rgba(255,176,136,0));
     }
-    .card[data-card-id="ref-spatial"] .enter-row .lbl {
-      font: 600 20px/1 var(--font-mono); letter-spacing: .34em; text-transform: uppercase; color: var(--ink-dim);
+    /* 底排：空心巨号 + 说明 */
+    .card[data-card-id="ref-spatial"] .footrow {
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 44px;
     }
-    .card[data-card-id="ref-spatial"] .enter-row .ln {
-      height: 2px; width: 0; border-radius: 2px;
-      background: linear-gradient(90deg, var(--accent), transparent);
+    .card[data-card-id="ref-spatial"] .footrow .idx {
+      font: 700 104px/0.8 var(--font-sans); letter-spacing: -.04em;
+      color: transparent; -webkit-text-stroke: 1.5px rgba(255,176,136,.5);
     }
-    .card[data-card-id="ref-spatial"] .enter-row .arr { color: var(--accent); font-size: 30px; margin-left: -8px; }
+    .card[data-card-id="ref-spatial"] .footrow .detail {
+      flex: 1; max-width: 560px; font: 500 26px/1.5 var(--font-han);
+      color: var(--ink-dim); overflow-wrap: anywhere;
+    }
+    .card[data-card-id="ref-spatial"] .footrow .detail b { color: var(--accent-hi); font-weight: 700; }
   </style>
 
   <div class="root">
@@ -190,15 +207,17 @@
           <span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span>
         </div>
         <div class="kicker" data-anim="fade-in" data-anim-at="0.55" data-anim-duration="0.5">
-          DEMO <span class="dot">&bull;</span> 视觉风格预览
+          <span class="dia"></span> Field Note <span class="zh">视觉风格预览</span>
         </div>
         <h1 class="title" data-anim="slide-in" data-anim-at="0.70" data-anim-duration="0.9"
             data-anim-from="bottom" data-anim-distance="44">暗场太空舱</h1>
         <div class="sub-en" data-anim="fade-in" data-anim-at="1.0" data-anim-duration="0.6">SPATIAL</div>
-        <div class="enter-row">
-          <span class="lbl" data-anim="fade-in" data-anim-at="1.2" data-anim-duration="0.5">Reference Card</span>
-          <span class="ln" data-anim="grow-x" data-anim-at="1.2" data-anim-duration="0.7" data-anim-target-w="220"></span>
-          <span class="arr" data-anim="fade-in" data-anim-at="1.35" data-anim-duration="0.4">&rarr;</span>
+        <div class="rule" data-anim="grow-x" data-anim-at="1.15" data-anim-duration="0.7" data-anim-target-w="980"></div>
+        <div class="footrow">
+          <div class="idx" data-anim="fade-in" data-anim-at="1.25" data-anim-duration="0.5">01</div>
+          <div class="detail" data-anim="fade-in" data-anim-at="1.35" data-anim-duration="0.6">
+            暖橙 rim light + 伪 3D 悬浮面板，<b>单一氛围色</b>笼罩的电影级纵深。
+          </div>
         </div>
       </div>
     </div>

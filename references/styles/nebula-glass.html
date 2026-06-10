@@ -1,0 +1,228 @@
+<!--
+  Style: nebula-glass (暗场星云 · 磨砂玻璃 · 归藏排版)
+  ─────────────────────────────────────────────────────────────────────
+  三股 DNA 的融合：
+    · 粒子 —— flow-field 双星粒子场（黑底 + 银白星 + 电光蓝热核星 + 拖丝），
+              呼应 Velo/fable 类粒子模型的沉浸能量感
+    · 玻璃 —— 沿用 glass 的磨砂面板（backdrop-blur + 亮边 + 顶部高光）
+    · 归藏 —— 瑞士/杂志式排版：强字阶、超大序号、发丝线、letter-spaced 英文
+              kicker、取景框 chrome（克制、网格、负空间）
+
+  ⚠️ 关键技术约束（务必读）：真·粒子场不能写进卡片 HTML（卡片禁 <script>）。
+     它是 **composition 级**效果，写进 index.html 的 <script>，并由 GSAP 时间轴
+     的 onUpdate 驱动 canvas —— 且必须写成「时间的闭式函数 pos=f(t)」，不做逐帧
+     状态累积。这样 hyperframes 的确定性 seek 捕获才能逐帧精确复现（已实测：同一
+     时刻截两次 md5 完全一致）。配方在下面「Composition-level」段，整段可粘贴。
+     卡片 .root 本体保持透明，让粒子场从背后透出（与 glass 同理）。
+
+  Tokens
+    bg        #000000              （纯黑舞台，粒子场吃黑底最透）
+    ink       #EAF1FF              （主文字：冷白）
+    ink-dim   rgba(234,241,255,.56)
+    ink-faint rgba(234,241,255,.30)
+    accent    #5B8CFF              （电光蓝 —— kicker/序号描边/高光）
+    accent-ice#BFD4FF              （冰白蓝 —— 渐变标题/署名）
+    glass     rgba(146,170,225,.06)
+    glass-edge rgba(190,210,255,.20)
+    粒子双星：银白星 rgba(222,228,240) · 蓝热核星 白核+rgba(120,160,255) 晕
+  Fonts
+    display/标题 — 'Inter' / 'PingFang SC' 800（大字 + 负字距，重体）
+    body/中文    — 'PingFang SC' / 'Inter'（竖屏放大 1.3×）
+    meta/英文    — 'Inter' 600，letter-spacing .30–.40em，uppercase
+  Signature moves
+    - 玻璃面板：rgba(146,170,225,.06) + backdrop-filter blur(30px) saturate(150%)
+      + 1.5px 亮边 + 顶部 46% 高光渐变 + 0 40px 120px 冷投影 + 内发光
+    - 面板左侧一道 accent 竖向标尺（归藏式）
+    - 标题局部用渐变描金（这里是描「冰」）：#FFF→accent-ice→accent + bg-clip:text
+    - 超大序号用 -webkit-text-stroke 空心字（归藏招牌）
+    - 取景框四角 ticks + 中心 registration 十字（呼应截图里的 + 光标）
+    - 顶部 meta：INTERFLOW / NEBULA + ● REC 仪表盘字
+
+  Composition-level（粒子场 —— 粘贴进 index.html，确定性 canvas）
+    1) 在 #stage 第一个子元素放 atmosphere canvas（黑底，铺满）：
+         <canvas id="neb" width="W" height="H"></canvas>
+       （W×H = composition.width×height；卡片透明 root 会叠在它上面）
+    2) 在 index.html 的 GSAP <script> 里加入下面整段（已是闭式 + 时间轴驱动，
+       直接确定性渲染；改 STARS 坐标/数量 N/配色即可）：
+
+    ```js
+    // ── nebula-glass 粒子场（闭式确定性，GSAP 时间轴驱动 canvas）──
+    (function(){
+      var cv=document.getElementById('neb'); if(!cv) return;
+      var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+      function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+      var rnd=mulberry32(0x9E3779B9), rand=function(a,b){return a+(b-a)*rnd();};
+      // 双星：坐标按你的画幅调（这里给 1080×1920 竖屏值）。hue:'ice'|'blue'
+      var STARS=[{x:W*0.33,y:H*0.40,hue:'ice'},{x:W*0.71,y:H*0.35,hue:'blue'}];
+      var N=1850,P=[];
+      for(var i=0;i<N;i++){var star=rnd()<0.52?0:1,esc=rnd()<0.22;
+        P.push({s:star,a0:rand(0,6.2832),r0:esc?rand(180,620):rand(8,150),
+          w:rand(0.18,0.85)*(rnd()<0.5?-1:1),ecc:rand(0.55,1.15),rj:rand(0.10,0.32),
+          rf:rand(0.25,0.7),rp:rand(0,6.28),af:rand(0.3,0.9),ap:rand(0,6.28),aa:rand(0.15,0.6),
+          fa:esc?rand(20,70):rand(6,26),ff1:rand(0.15,0.5),ff2:rand(0.15,0.5),
+          sz:rand(0.5,1.7),br:rand(0.35,1.0),esc:esc});}
+      function pos(p,t){var C=STARS[p.s];
+        var ang=p.a0+p.w*t+p.aa*Math.sin(t*p.af+p.ap);
+        var rad=p.r0*(1+p.rj*Math.sin(t*p.rf+p.rp))+(p.esc?26*Math.sin(t*0.22+p.ap):0);
+        return [C.x+rad*Math.cos(ang)*p.ecc+p.fa*Math.sin(t*p.ff1+p.a0*2.0),
+                C.y+rad*Math.sin(ang)+p.fa*Math.cos(t*p.ff2+p.a0*1.3)];}
+      function draw(t){
+        ctx.globalCompositeOperation='source-over';ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+        ctx.globalCompositeOperation='lighter';
+        for(var k=0;k<2;k++){var C=STARS[k],pulse=1+0.10*Math.sin(t*0.7+k*2.1),R=(k===1?340:250)*pulse,g;
+          if(C.hue==='blue'){var core=ctx.createRadialGradient(C.x,C.y,0,C.x,C.y,90*pulse);
+            core.addColorStop(0,'rgba(255,255,255,1)');core.addColorStop(0.5,'rgba(225,238,255,0.85)');core.addColorStop(1,'rgba(180,205,255,0)');
+            ctx.fillStyle=core;ctx.beginPath();ctx.arc(C.x,C.y,90*pulse,0,6.2832);ctx.fill();
+            g=ctx.createRadialGradient(C.x,C.y,0,C.x,C.y,R);
+            g.addColorStop(0,'rgba(210,228,255,0.75)');g.addColorStop(0.16,'rgba(120,160,255,0.55)');g.addColorStop(0.42,'rgba(58,98,240,0.24)');g.addColorStop(1,'rgba(36,64,205,0)');
+          }else{g=ctx.createRadialGradient(C.x,C.y,0,C.x,C.y,R);
+            g.addColorStop(0,'rgba(245,247,252,0.80)');g.addColorStop(0.12,'rgba(206,214,232,0.34)');g.addColorStop(0.46,'rgba(150,162,196,0.11)');g.addColorStop(1,'rgba(120,135,180,0)');}
+          ctx.fillStyle=g;ctx.beginPath();ctx.arc(C.x,C.y,R,0,6.2832);ctx.fill();}
+        var dt=0.045;
+        for(var j=0;j<N;j++){var p=P[j],a1=pos(p,t),a2=pos(p,t-dt),vx=a1[0]-a2[0],vy=a1[1]-a2[1],sp=Math.hypot(vx,vy);
+          var len=Math.min(sp*(p.esc?3.4:1.8),p.esc?185:48),inv=sp>0.0001?len/sp:0,x2=a1[0]-vx*inv,y2=a1[1]-vy*inv;
+          var a=Math.max(0,Math.min(1,p.br*(p.esc?0.55:0.9)));
+          ctx.strokeStyle=p.s===1?'rgba(150,190,255,'+a+')':'rgba(222,228,240,'+(a*0.85)+')';
+          ctx.lineWidth=p.sz*(p.esc?0.85:1.2);ctx.lineCap='round';
+          ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(a1[0],a1[1]);ctx.stroke();
+          if(p.br>0.7){ctx.fillStyle=p.s===1?'rgba(205,225,255,'+a+')':'rgba(240,243,250,'+a+')';
+            ctx.beginPath();ctx.arc(a1[0],a1[1],p.sz*0.9,0,6.2832);ctx.fill();}}
+        ctx.globalCompositeOperation='source-over';
+      }
+      // 用一个 proxy tween 把「tween 值 === 时间轴时间」，onUpdate 时按该时刻重绘 canvas。
+      // tl 是本 composition 的 master timeline（与卡片动画同一条）。DUR = composition.durationSeconds。
+      var clock={t:0};
+      tl.to(clock,{t:DUR,duration:DUR,ease:'none',onUpdate:function(){draw(clock.t);}},0);
+      draw(0); // 画 t=0 初始帧
+    })();
+    ```
+
+    要点：
+    - canvas 写在 #stage **第一个**子元素 → 永远是背景层（卡片在其上合成）。
+    - 不要用 requestAnimationFrame / performance.now / Math.random 进 draw —— 随机只在
+      初始化（mulberry32 种子）里用一次。draw(t) 必须是纯 f(t)。
+    - 双星坐标按画幅改：竖屏放上半区让出下方玻璃卡；overlay 时可把卡放中下，
+      让两星在卡上方「相遇」。
+    - 运动遵循全局 Motion 默认（slip 转场 / ambient drift / shared camera，见
+      DESIGN_INDEX.md → Motion）；粒子场是常驻氛围层，**不随卡片切换重置**。
+    - 守住「氛围不盖过说话人」：粒子是壁纸不是主角。口播 overlay 时把双星亮度
+      （core/晕 alpha）整体降 ~20%，别和人脸抢。
+  Best with
+    layouts: overlay（粒子全屏最出彩）, stack（人像在上、玻璃卡在下，双星点缀两侧）
+    frames:  clean（全出血粒子忌加装饰边框）
+    content: 短视频高光 / 产品·科技发布 / 强情绪开场 / AI 话题 / 电影感收尾
+    尾卡:    card-cta（深色 Editorial Cinema，把 accent 改成 #5B8CFF 即同调）
+    配色变体：把蓝热核星换成暖橙（accent #FF8A4C）即得「暖星云」，与 spatial 同温
+-->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>style · nebula-glass (暗场星云 · 磨砂玻璃 · 归藏排版)</title>
+<style>
+  /* 标准预览外壳：1920×1080 缩 0.5。注意——本预览用「烘焙静态双星」作占位，
+     真实动态粒子场是 composition 级 canvas（见上方 Composition-level 配方）。 */
+  html, body { margin: 0; padding: 0; background: #000;
+               font-family: ui-sans-serif, system-ui, sans-serif; }
+  .stage { position: relative; width: 1920px; height: 1080px;
+           transform-origin: top left; transform: scale(0.5); overflow: hidden; }
+  .card-host { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px;
+               /* 预览占位：黑底 + 两团烘焙星辉（生产环境由 canvas 取代）*/
+               background:
+                 radial-gradient(circle 150px at 30% 42%, rgba(255,255,255,.9) 0%, rgba(206,214,232,.18) 18%, transparent 52%),
+                 radial-gradient(circle 70px  at 64% 38%, rgba(255,255,255,1) 0%, rgba(120,160,255,.7) 22%, rgba(58,98,240,.18) 48%, transparent 70%),
+                 #000; }
+</style>
+</head>
+<body>
+<div class="stage"><div class="card-host">
+
+<div class="card" data-card-id="ref-nebula-glass">
+  <style>
+    .card[data-card-id="ref-nebula-glass"] .root {
+      --ink:#EAF1FF; --ink-dim:rgba(234,241,255,.56); --ink-faint:rgba(234,241,255,.30);
+      --accent:#5B8CFF; --accent-ice:#BFD4FF;
+      --glass:rgba(146,170,225,.06); --glass-edge:rgba(190,210,255,.20);
+      --font-sans:'Inter',ui-sans-serif,system-ui,sans-serif;
+      --font-han:'PingFang SC','Inter',sans-serif;
+      width:100%; height:100%; position:relative; overflow:hidden;
+      /* 生产环境：保持透明，让 composition 级粒子 canvas 透出。
+         本预览：透明叠在 .card-host 的烘焙双星上。 */
+      background:transparent;
+      color:var(--ink); font-family:var(--font-sans);
+      display:flex; align-items:flex-end; box-sizing:border-box;
+      padding:0 96px 120px;
+    }
+    /* 取景框四角 + 顶部 meta（归藏 chrome）*/
+    .card[data-card-id="ref-nebula-glass"] .tick { position:absolute; width:40px; height:40px;
+      border-color:rgba(190,210,255,.22); }
+    .card[data-card-id="ref-nebula-glass"] .tick.tl { top:56px; left:60px; border-top:1.6px solid; border-left:1.6px solid; }
+    .card[data-card-id="ref-nebula-glass"] .tick.tr { top:56px; right:60px; border-top:1.6px solid; border-right:1.6px solid; }
+    .card[data-card-id="ref-nebula-glass"] .meta { position:absolute; top:52px; left:120px; right:120px;
+      display:flex; justify-content:space-between; align-items:center;
+      font:600 19px/1 var(--font-sans); letter-spacing:.34em; text-transform:uppercase; color:var(--ink-faint); }
+    .card[data-card-id="ref-nebula-glass"] .meta .rec { display:flex; align-items:center; gap:11px; color:var(--accent-ice); }
+    .card[data-card-id="ref-nebula-glass"] .meta .rec .d { width:10px; height:10px; border-radius:50%;
+      background:var(--accent); box-shadow:0 0 14px var(--accent),0 0 4px #fff; }
+    /* 磨砂玻璃面板 */
+    .card[data-card-id="ref-nebula-glass"] .pane {
+      position:relative; z-index:1; width:100%; max-width:1180px;
+      padding:60px 64px 56px; border-radius:34px;
+      background:var(--glass);
+      -webkit-backdrop-filter:blur(30px) saturate(150%); backdrop-filter:blur(30px) saturate(150%);
+      border:1.5px solid var(--glass-edge);
+      box-shadow:0 40px 120px rgba(0,8,40,.55), inset 0 1.5px 0 rgba(200,220,255,.22), inset 0 0 60px rgba(70,110,220,.07);
+      overflow:hidden;
+    }
+    .card[data-card-id="ref-nebula-glass"] .pane::before { content:''; position:absolute; left:0; right:0; top:0; height:46%;
+      background:linear-gradient(180deg,rgba(200,220,255,.12),transparent); pointer-events:none; }
+    .card[data-card-id="ref-nebula-glass"] .pane::after { content:''; position:absolute; left:0; top:18%; bottom:18%; width:4px;
+      background:linear-gradient(180deg,var(--accent),rgba(91,140,255,0)); border-radius:4px; }
+    .card[data-card-id="ref-nebula-glass"] .kicker { display:flex; align-items:center; gap:16px; margin-bottom:26px;
+      font:600 21px/1 var(--font-sans); letter-spacing:.40em; text-transform:uppercase; color:var(--ink-dim); }
+    .card[data-card-id="ref-nebula-glass"] .kicker .sq { width:13px; height:13px; background:var(--accent);
+      transform:rotate(45deg); box-shadow:0 0 16px var(--accent); }
+    .card[data-card-id="ref-nebula-glass"] .kicker .zh { letter-spacing:.18em; color:var(--ink); font-weight:600; }
+    .card[data-card-id="ref-nebula-glass"] .title { font:800 96px/1.08 var(--font-han); letter-spacing:-.01em;
+      color:var(--ink); text-shadow:0 4px 50px rgba(20,40,110,.5); margin:0;
+      overflow-wrap:anywhere; text-wrap:balance; max-width:100%; }
+    .card[data-card-id="ref-nebula-glass"] .title .hl { color:transparent;
+      background:linear-gradient(96deg,#FFFFFF,var(--accent-ice) 45%,var(--accent));
+      -webkit-background-clip:text; background-clip:text; }
+    .card[data-card-id="ref-nebula-glass"] .rule { height:1.5px; width:100%; margin:36px 0 30px;
+      background:linear-gradient(90deg,rgba(190,210,255,.45),rgba(190,210,255,0)); }
+    .card[data-card-id="ref-nebula-glass"] .footrow { display:flex; align-items:flex-end; justify-content:space-between; gap:30px; }
+    .card[data-card-id="ref-nebula-glass"] .footrow .idx { font:800 104px/0.8 var(--font-sans); letter-spacing:-.04em;
+      color:transparent; -webkit-text-stroke:1.5px rgba(190,210,255,.5); }
+    .card[data-card-id="ref-nebula-glass"] .footrow .detail { flex:1; font:500 30px/1.5 var(--font-han);
+      color:var(--ink-dim); max-width:560px; overflow-wrap:anywhere; }
+    .card[data-card-id="ref-nebula-glass"] .footrow .detail b { color:var(--accent-ice); font-weight:700; }
+  </style>
+
+  <div class="root">
+    <span class="tick tl"></span><span class="tick tr"></span>
+    <div class="meta">
+      <span data-anim="fade-in" data-anim-at="0.15" data-anim-duration="0.5">INTERFLOW / NEBULA</span>
+      <span class="rec" data-anim="fade-in" data-anim-at="0.25" data-anim-duration="0.5"><span class="d"></span> REC · 9:16</span>
+    </div>
+
+    <div class="pane">
+      <div class="kicker" data-anim="fade-in" data-anim-at="0.30" data-anim-duration="0.5">
+        <span class="sq"></span> Field Note <span class="zh">核心判断</span>
+      </div>
+      <h1 class="title" data-anim="slide-in" data-anim-at="0.45" data-anim-duration="0.9"
+          data-anim-from="bottom" data-anim-distance="40">两团粒子<span class="hl">在中点相遇</span></h1>
+      <div class="rule" data-anim="grow-x" data-anim-at="0.95" data-anim-duration="0.7" data-anim-target-w="1052"></div>
+      <div class="footrow">
+        <div class="idx" data-anim="fade-in" data-anim-at="1.05" data-anim-duration="0.5">01</div>
+        <div class="detail" data-anim="fade-in" data-anim-at="1.15" data-anim-duration="0.6">
+          把粒子写成<b>时间的闭式函数</b>，确定性渲染就能要到这种密集流场辉光。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div></div>
+</body>
+</html>

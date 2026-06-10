@@ -6,8 +6,15 @@ designing a takeaway video.
 
 ```
 Style  ×  Layout  ×  VideoFrame
- (13)      (4)         (3)        = 156 possible combinations
+ (9)       (4)         (3)        = 108 possible combinations
 ```
+
+> **One style breaks the mold:** `editorial-print` is an **asset-driven montage**
+> (the images/video clips ARE the content, arranged like a printed spread) — not
+> a text card over a talking-head. It has its own multi-asset primitives +
+> transitions + asset-staging rules in
+> [editorial-print-montage.md](editorial-print-montage.md). Read that companion
+> before authoring an editorial-print scene.
 
 Read a reference file when you decide to use that dimension. Each file is a
 self-contained HTML fragment that follows the interflow-video-cut card-HTML contract
@@ -30,34 +37,57 @@ header for the recommended `zone` + the GSAP statement to paste.
 (Earlier docs referenced a `card.layout` field — that field does NOT
 exist in the real schema; the strict v3 schema only has `card.zone`.)
 
+## 中文风格词库（一眼挑对 · 选风格时先看这张）
+
+给中国创作者用的中文名 + 大白话「什么时候用」。**选风格时优先按这张表的中文名
+和场景来挑**；英文 `key` 只是内部文件名（agent 用它找文件、套 frame 矩阵）。
+
+| 中文名 | key | 一句话什么时候用 | 联想词 |
+|---|---|---|---|
+| **暗夜星河** | `nebula-glass` | 黑底+流动粒子+玻璃，**最高级最有科技感**（旗舰） | 星空 · 粒子 · 未来 · AI · 发布会 |
+| **玻璃拟态** | `glass` | 简单两色渐变 + 磨砂玻璃，半透明、干净、高级 | 玻璃 · 磨砂 · 半透明 · 简洁 · 高级 |
+| **暖光太空** | `spatial` | 黑底+暖橙光，温暖又有空间感（唯一的暖黑底） | 暖光 · 深空 · 温暖 · 人物 · 治愈 |
+| **撞色大字** | `geom` | 黑底+亮色块+超大字，大胆有冲击力 | 撞色 · 大字 · 态度 · 宣言 · 潮 |
+| **瑞士网格** | `swiss` | 白底+红点+大字，干净、专业、权威 | 瑞士 · 网格 · 报告 · 数据 · 严肃 |
+| **黑白极简** | `minimal` | 纯黑白大字+极致留白，高级、克制 | 极简 · 黑白 · 留白 · 金句 · 高级 |
+| **代码终端** | `terminal` | 黑底绿字代码风，技术、极客、工程感 | 代码 · 终端 · 技术 · 编程 · 极客 |
+| **柔光浅色** | `pastel-aura` | 浅色柔和不刺眼，日常、白天、轻松（白天锚点） | 浅色 · 柔和 · 清爽 · 日常 · 温柔 |
+| **杂志印刷** | `editorial-print` | 把照片/素材排成杂志跨页（不是文字卡） | 杂志 · 印刷 · 作品集 · 大事记 · 排版 |
+
+**4 大类（选风格题就按这个分）：**
+- **暗调电影感**（黑底·高级·有动态）= 暗夜星河 / 玻璃拟态 / 暖光太空 / 撞色大字
+- **干净专业**（数据·报告·严肃）= 瑞士网格 / 黑白极简 / 代码终端
+- **浅色清爽**（日常·白天·轻松）= 柔光浅色
+- **杂志素材**（作品集·素材排版）= 杂志印刷
+
+> 自动匹配（`auto-style.py`）也按中文名回报：亮视频→柔光浅色/瑞士网格；
+> 暗+冷视频→暗夜星河/玻璃拟态；暗+暖视频→暖光太空。
+
 ## Styles — the card's visual language
 
 | key | file | character | accent | suggested font |
 |---|---|---|---|---|
-| `academic` | [styles/academic.html](styles/academic.html) | warm paper · grid · serif · blue highlight | `#2557a7` | serif |
-| `editorial` | [styles/editorial.html](styles/editorial.html) | cream · coral block · big italic quote | `#ff3a2d` | Playfair-like serif |
 | `minimal` | [styles/minimal.html](styles/minimal.html) | pure black/white · huge type · generous space | `#000` | Inter |
-| `spotlight` | [styles/spotlight.html](styles/spotlight.html) | dark purple gradient · glow · dramatic | `#a78bfa` | sans |
-| `geom` | [styles/geom.html](styles/geom.html) | chartreuse + hot pink + black collision | `#d4ff00` | Inter bold |
-| `whiteboard` | [styles/whiteboard.html](styles/whiteboard.html) | paper · Caveat handwriting · sketched borders | `#ff6b35` | Caveat |
-| `audit` | [styles/audit.html](styles/audit.html) | manila paper · justified serif · APPROVED stamp | `#8b1d1d` | serif |
+| `geom` | [styles/geom.html](styles/geom.html) | black ground · ONE electric accent · oversized bold type · crisp geometry | `#d4ff3a` | Inter bold |
 | `terminal` | [styles/terminal.html](styles/terminal.html) | dark · monospace · ASCII border · prompt cursor | `#4ade80` | mono |
 | `swiss` | [styles/swiss.html](styles/swiss.html) | white · Helvetica · strict double rules · red accent | `#e8190f` | Helvetica/Inter |
-| `xhs` | [styles/xhs.html](styles/xhs.html) | cream + hot pink · chips · #hashtags · ❤️💬 row | `#ff2e63` | sans |
 | `pastel-aura` ★ | [styles/pastel-aura.html](styles/pastel-aura.html) | ivory + mint/lavender/peach aura gradients · serif headlines · white floating cards | `#A98F5E` | Georgia + Songti SC serif |
-| `aurora-glass` ✦ | [styles/aurora-glass.html](styles/aurora-glass.html) | dark drifting multi-hue aurora · frosted-glass panels · film grain · damped slide transitions | `#FF8A4C` | Inter + PingFang SC |
+| `glass` ✦ | [styles/glass.html](styles/glass.html) | **玻璃拟态 glassmorphism** · simple two-color gradient · prominent frosted-glass panel · cool palette · film grain | `#5B8CFF` | Inter + PingFang SC |
 | `spatial` ✶ | [styles/spatial.html](styles/spatial.html) | single warm-dark atmosphere · faux-3D floating panel (perspective + double shadow) · warm rim light · viewfinder corner chrome · grain + halftone | `#FF8A4C` | Inter + PingFang SC + mono meta |
+| `nebula-glass` ✸ | [styles/nebula-glass.html](styles/nebula-glass.html) | pure-black deep space · twin flow-field particle stars (silver + electric-blue hot-core) · frosted-glass panel · Swiss/Guizang type (hollow giant numeral, hairline rules) · viewfinder chrome | `#5B8CFF` | Inter + PingFang SC |
+| `editorial-print` ◆ | [styles/editorial-print.html](styles/editorial-print.html) | warm paper · 3px ink borders · HARD offset shadow (no blur) · grain · ghost serif · hand-drawn arrow — an **asset montage**, not a text card | `#16140F` | serif headline + Inter labels |
 
 ★ `pastel-aura` — light/soft branch: ivory + pastel aurora gradients, serif
 headlines, white floating cards. Best for 个人分享 / brand storytelling /
 AI·SaaS tone. Pairs well with `pip` or `stack`; pip uses a white-ring pill.
 
-✦ `aurora-glass`（彩雾磨砂玻璃）— dark cinematic branch, an upgrade of
-`spotlight`: drifting multi-hue aurora behind frosted-glass panels + film
-grain + damped slide transitions. Card `.root` should keep a transparent
-background so the aurora shows through. Best with `overlay` / `stack`.
+✦ `glass`（**玻璃拟态 glassmorphism**，2026-06 重做：去掉彩雾 → 纯磨砂玻璃）—
+中文名「玻璃拟态」。背景**只用两个素色之间的简单渐变**（深靛 → 青蓝，可加 1 个极淡冷
+光斑），磨砂玻璃面板是绝对主角（backdrop-blur 拉满 + 亮边 + 顶部高光）。**不要多团
+彩雾、不要 hue 大范围转**。与 nebula-glass 同为冷调玻璃，但 nebula 是颗粒星场、这个是
+纯净玻璃拟态。accent `#5B8CFF`。Best with `overlay` / `stack` / fullscreen hero。
 
-✶ `spatial`（暗场太空舱 / 空间感）— `aurora-glass` 的「立体化升级」：同样
+✶ `spatial`（暗场太空舱 / 空间感）— `glass` 的「立体化升级」：同样
 暗场暖光，但把沉浸式 3D 体验页的 DNA（单一氛围色笼罩 + 电影级打光 +
 3D 空间纵深 + 取景框仪表盘字 + 颗粒/半调）用纯 CSS 伪造：`perspective` +
 倾斜面板 + 双层投影做体积感，`::after` 径向暖光做 rim light。composition 级
@@ -75,9 +105,34 @@ tiny pip on top + a panel sunk at the bottom leaves a dead band in the middle.)
 This whole composition (atmosphere on `#stage` + pip + transparent cards + GSAP)
 is fully worked out in SKILL.md Step 9 — copy that template.
 
-Choose by content tone, not by content type — `academic` works for finance
-too if the tone is reflective; `terminal` works for non-tech if the tone is
-"engineering rigor".
+✸ `nebula-glass`（暗场星云 · 磨砂玻璃 · 归藏排版）— 三股 DNA 融合：**flow-field
+双星粒子场**（黑底 + 银白星 + 电光蓝热核星 + 拖丝，呼应 Velo/fable 类粒子模型的
+沉浸能量感）+ **磨砂玻璃面板**（沿用 glass 的 backdrop-blur DNA）+ **归藏式
+瑞士排版**（强字阶、超大空心序号、发丝线、letter-spaced 英文 meta、取景框 chrome）。
+**关键**：真粒子场是 composition 级 canvas（卡片禁 `<script>`），必须写成**时间闭式
+`pos=f(t)` 并由 GSAP 时间轴 onUpdate 驱动**——这样 hyperframes 的确定性 seek 捕获才能
+逐帧精确复现（已实测：同一时刻截两帧 md5 完全一致）。卡片 `.root` 保持透明让粒子透出。
+整段可粘贴的 canvas 配方写在 `styles/nebula-glass.html` 头注释「Composition-level」段。
+Best with `overlay`（粒子全屏最出彩）/ `stack`；frame 恒 `clean`；用于短视频高光 /
+产品·科技发布 / 强情绪开场 / AI 话题 / 电影感收尾。把蓝热核星换暖橙 `#FF8A4C` 即得
+「暖星云」变体，与 `spatial` 同温。守则：粒子是壁纸不是主角，口播时整体降亮 ~20%
+不与人脸抢。
+
+◆ `editorial-print`（暖纸印刷感 montage）— the odd one out: a **fullscreen
+asset-driven scene** where user images/video clips are arranged like a printed
+editorial spread (warm `#F5F5EE` paper, 3px ink borders, hard offset shadows,
+grain, oversized ghost serif, hand-drawn arrows). It ignores the video↔card
+split — every card is the whole canvas. Use it for product/portfolio showcases,
+大事记, company intros, or a B-roll montage beat inside a 口播 cut (hide
+`#video-wrap` during the scene). Full kit — 5 layout primitives (poster /
+photo-grid / collage / logo-strip / print-stack), 3 transitions (whip-pan /
+blinds-wipe / paper-flash), asset staging, image↔video slot rules, and the two
+usage modes — in [editorial-print-montage.md](editorial-print-montage.md).
+Frame is always `clean` (panels carry their own border).
+
+Choose by content tone, not by content type — `swiss` works for a reflective
+finance piece if the tone is disciplined; `terminal` works for non-tech if the
+tone is "engineering rigor".
 
 ## Video Frames — decoration around the video element
 
@@ -151,18 +206,31 @@ move, never out of sync.
 
 | video content | suggested combos |
 |---|---|
-| 访谈 / 对话 | `academic` × `stack`, `audit` × `split` |
-| 产品发布 / 公告 | `editorial` × `overlay`, `geom` × `pip` |
-| 数据分析 / 财报 | `audit` × `split`, `swiss` × `stack`, `terminal` × `pip` |
-| 社交剪辑（9:16） | `xhs` × `overlay`, `editorial` × `stack` |
-| 技术教程 | `terminal` × `split`, `whiteboard` × `pip` |
-| 情绪故事 / 旁白 | `spotlight` × `overlay`, `aurora-glass` × `overlay`, `whiteboard` × `overlay` |
-| 短视频高光 / 电影感 | `spatial` × `overlay`, `aurora-glass` × `overlay`, `geom` × `pip` |
-| 产品发布 / 科技沉浸感 | `spatial` × `pip`, `spatial` × `overlay`, `editorial` × `overlay` |
+| 访谈 / 对话 | `swiss` × `stack`, `minimal` × `split` |
+| 产品发布 / 公告 | `nebula-glass` × `overlay`, `geom` × `pip` |
+| 数据分析 / 财报 | `swiss` × `split`, `swiss` × `stack`, `terminal` × `pip`, `minimal` × `stack` |
+| 社交剪辑（9:16） | `pastel-aura` × `stack`, `nebula-glass` × `overlay` |
+| 技术教程 | `terminal` × `split`, `minimal` × `pip` |
+| 情绪故事 / 旁白 | `nebula-glass` × `overlay`, `glass` × `overlay`, `spatial` × `overlay`, `pastel-aura` × `stack` |
+| 短视频高光 / 电影感 | `nebula-glass` × `overlay`, `spatial` × `overlay`, `glass` × `overlay`, `geom` × `pip` |
+| 产品发布 / 科技沉浸感 | `nebula-glass` × `overlay`, `spatial` × `pip`, `spatial` × `overlay`, `glass` × `overlay` |
 | 极简陈述 | `minimal` × `split`, `swiss` × `overlay` |
+| 素材展示 / 作品集 / 大事记 / 公司介绍 | `editorial-print`（fullscreen scene, no video↔card split — see [montage kit](editorial-print-montage.md)） |
 
 These are starting points only. Look at the transcript, pick the tone, then
 pick the visual.
+
+## Auto style-match by video color（明暗 / 冷暖自动匹配）
+
+Before asking the user (SKILL.md Step 7.0), run
+`scripts/auto-style.py <video> --json` — it samples frames, reads each frame's
+average color via `ffmpeg scale=1:1`, and classifies the video as
+**light/dark × warm/cool**, returning a ranked `recommend` list. This is the
+**白天/黑夜自动切换**: a bright video → a light style (`swiss` / `pastel-aura` /
+`minimal`); a dark video → a dark style (`nebula-glass` / `glass` /
+`spatial`); warmth picks within. Use `recommend[0]` as the default style
+(mark it 推荐 in the question, or apply directly when the user pre-approved
+defaults). Always overridable by the user's explicit pick.
 
 ## Portrait sizing — bigger type for mobile
 

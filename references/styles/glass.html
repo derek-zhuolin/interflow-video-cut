@@ -1,0 +1,169 @@
+<!--
+  Style: glass (玻璃拟态 · Glassmorphism)  ← 2026-06 重做：去掉彩雾，回归纯粹磨砂玻璃
+  中文名：玻璃拟态（旧称「冷光极光/彩雾磨砂玻璃」已废弃）
+  ─────────────────────────────────────────────────────────────────────
+  身份：经典玻璃拟态（glassmorphism）。背景**只用两个素色之间的简单渐变**（不要
+  多团彩雾），磨砂玻璃面板是绝对主角。区别于：nebula=粒子星场；spatial=暖光太空。
+  关键词：磨砂玻璃、半透明、简单两色、克制、高级。
+
+  Tokens（冷调，背景只两色 + 至多一个极淡 accent 光斑）
+    bg-a      #1B2350   (背景渐变起点：深靛蓝，素色)
+    bg-b      #2B5A7E   (背景渐变终点：青灰蓝，素色)
+    ink       #EAF1FF   (主文字：冷白)
+    ink-dim   rgba(234,241,255,.62)
+    accent    #5B8CFF   (电光蓝 —— kicker/高光)
+    accent-cy #7FE3F0   (冰青 —— 渐变端/次高光)
+    glass     rgba(255,255,255,.10)    (玻璃面板底，比彩雾版更实一点，玻璃感更强)
+    glass-edge rgba(255,255,255,.30)   (玻璃亮边)
+  Fonts
+    display/EN — 'Inter' (800, 大字 + 负字距)
+    body/中文  — 'PingFang SC' / 'Inter'
+  Signature moves（玻璃就是全部）
+    - 背景：linear-gradient(135deg, bg-a, bg-b)，外加 1 个极淡 radial accent 光斑（可选，
+      就「一点简单的」，别堆）。NO 多团彩雾。
+    - 玻璃面板：rgba(255,255,255,.10) + backdrop-filter blur(40px) saturate(160%)
+      + 1.5px 亮边(.30) + 顶部 55% 高光渐变 + 0 40px 120px 柔投影 + inset 1px 高光
+      —— 磨砂质感拉满，让两色渐变在玻璃后被柔化、被折射。
+    - 标题局部冷调描金：linear-gradient(#FFFFFF, accent-cy, accent) + bg-clip:text
+    - 一道 accent 竖标尺 + 发丝线 + 数字 meta，排版克制
+  Composition-level（运动遵循全局 Motion 默认，见 DESIGN_INDEX.md → Motion）
+    STYLE-SPECIFIC：背景两色渐变常驻，至多让那个淡光斑做极慢 sine 漂移（amp 小）。
+    每切一张卡，渐变可在两邻近冷色间缓慢过渡。**不要**多 blob、不要 hue 大范围转。
+  Best with
+    layouts: overlay / fullscreen hero / stack
+    frames:  clean
+    content: 品牌叙事 / 产品发布 / 情绪故事 / 干净高级的科技感
+    尾卡:    card-cta（accent 改 #5B8CFF 即同调）
+-->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>style · glass (玻璃拟态 · Glassmorphism)</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #10182f;
+               font-family: ui-sans-serif, system-ui, sans-serif; }
+  .stage { position: relative; width: 1920px; height: 1080px;
+           transform-origin: top left; transform: scale(0.5); overflow: hidden; }
+  .card-host { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+</style>
+</head>
+<body>
+<div class="stage"><div class="card-host">
+
+<div class="card" data-card-id="ref-glass">
+  <style>
+    .card[data-card-id="ref-glass"] .root {
+      --ink: #EAF1FF; --ink-dim: rgba(234,241,255,.62);
+      --accent: #5B8CFF; --accent-cy: #7FE3F0;
+      --glass: rgba(255,255,255,.10); --glass-edge: rgba(255,255,255,.30);
+      --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      --font-han: 'PingFang SC', 'Inter', sans-serif;
+      width: 100%; height: 100%; position: relative; overflow: hidden;
+      /* 背景：只两个素色之间的简单渐变（135°），无彩雾 */
+      background: linear-gradient(135deg, #1B2350 0%, #2B5A7E 100%);
+      color: var(--ink); font-family: var(--font-sans);
+      display: flex; align-items: center; justify-content: flex-start;
+      padding: 0 130px; box-sizing: border-box;
+    }
+    /* 至多一个极淡的 accent 光斑（「一点简单的」），给玻璃一点可折射的东西 */
+    .card[data-card-id="ref-glass"] .root::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(circle 520px at 84% 22%, rgba(127,227,240,.30) 0%, transparent 62%),
+        radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(8,14,34,.35) 100%);
+    }
+    /* 颗粒（极淡，去塑料感）*/
+    .card[data-card-id="ref-glass"] .root::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .35;
+      mix-blend-mode: overlay;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    }
+    /* 顶部 meta */
+    .card[data-card-id="ref-glass"] .topmeta {
+      position: absolute; top: 56px; left: 130px; right: 130px; z-index: 2;
+      display: flex; justify-content: space-between; align-items: center;
+      font: 600 19px/1 var(--font-sans); letter-spacing: .34em; text-transform: uppercase;
+      color: rgba(234,241,255,.42);
+    }
+    .card[data-card-id="ref-glass"] .topmeta .rec { display: flex; align-items: center; gap: 11px; color: var(--accent-cy); }
+    .card[data-card-id="ref-glass"] .topmeta .rec .d { width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent-cy); box-shadow: 0 0 14px var(--accent-cy), 0 0 4px #fff; }
+    /* 磨砂玻璃面板（绝对主角，玻璃感拉满）*/
+    .card[data-card-id="ref-glass"] .pane {
+      position: relative; z-index: 1; max-width: 1120px;
+      padding: 80px 92px; border-radius: 40px;
+      background: var(--glass);
+      -webkit-backdrop-filter: blur(40px) saturate(160%);
+      backdrop-filter: blur(40px) saturate(160%);
+      border: 1.5px solid var(--glass-edge);
+      box-shadow: 0 40px 120px rgba(6,12,34,.50),
+                  inset 0 1.5px 0 rgba(255,255,255,.45),
+                  inset 0 0 80px rgba(255,255,255,.05);
+      overflow: hidden;
+    }
+    /* 玻璃顶部高光 */
+    .card[data-card-id="ref-glass"] .pane::before {
+      content: ''; position: absolute; left: 0; right: 0; top: 0; height: 55%;
+      background: linear-gradient(180deg, rgba(255,255,255,.16), transparent); pointer-events: none;
+    }
+    /* 左侧 accent 竖标尺 */
+    .card[data-card-id="ref-glass"] .pane::after {
+      content: ''; position: absolute; left: 0; top: 18%; bottom: 18%; width: 4px;
+      background: linear-gradient(180deg, var(--accent), rgba(91,140,255,0)); border-radius: 4px;
+    }
+    .card[data-card-id="ref-glass"] .kicker {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 30px;
+      font: 600 22px/1 var(--font-sans); letter-spacing: .40em; text-transform: uppercase;
+      color: var(--ink-dim);
+    }
+    .card[data-card-id="ref-glass"] .kicker .dot { width: 13px; height: 13px; background: var(--accent);
+      transform: rotate(45deg); box-shadow: 0 0 16px var(--accent); }
+    .card[data-card-id="ref-glass"] .title {
+      font: 800 128px/1.04 var(--font-han); letter-spacing: -.02em; color: var(--ink);
+      text-shadow: 0 2px 40px rgba(6,12,34,.30); margin: 0;
+    }
+    .card[data-card-id="ref-glass"] .title .hl { color: transparent;
+      background: linear-gradient(96deg, #FFFFFF, var(--accent-cy) 48%, var(--accent));
+      -webkit-background-clip: text; background-clip: text; }
+    .card[data-card-id="ref-glass"] .sub-en {
+      font: 800 38px/1 var(--font-sans); letter-spacing: .18em; text-transform: uppercase;
+      margin-top: 24px;
+      background: linear-gradient(92deg, #DFF6FF, #7FE3F0 50%, #5B8CFF);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .card[data-card-id="ref-glass"] .rule { height: 1.5px; width: 100%; margin: 40px 0 30px;
+      background: linear-gradient(90deg, rgba(255,255,255,.5), rgba(255,255,255,0)); }
+    .card[data-card-id="ref-glass"] .enter-row { display: flex; align-items: center; gap: 24px; }
+    .card[data-card-id="ref-glass"] .enter-row .lbl {
+      font: 600 22px/1 var(--font-sans); letter-spacing: .4em; text-transform: uppercase; color: var(--ink-dim); }
+    .card[data-card-id="ref-glass"] .enter-row .ln {
+      height: 2px; width: 0; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-cy)); }
+    .card[data-card-id="ref-glass"] .enter-row .arr { color: var(--accent-cy); font-size: 32px; margin-left: -8px; }
+  </style>
+
+  <div class="root">
+    <div class="topmeta">
+      <span data-anim="fade-in" data-anim-at="0.15" data-anim-duration="0.5">GLASSMORPHISM</span>
+      <span class="rec" data-anim="fade-in" data-anim-at="0.25" data-anim-duration="0.5"><span class="d"></span> REC · 16:9</span>
+    </div>
+    <div class="pane">
+      <div class="kicker" data-anim="fade-in" data-anim-at="0.20" data-anim-duration="0.5">
+        <span class="dot"></span> 视觉风格预览
+      </div>
+      <h1 class="title" data-anim="slide-in" data-anim-at="0.35" data-anim-duration="0.9"
+          data-anim-from="bottom" data-anim-distance="40">玻璃<span class="hl">拟态</span></h1>
+      <div class="sub-en" data-anim="fade-in" data-anim-at="0.6" data-anim-duration="0.6">FROSTED&nbsp;GLASS</div>
+      <div class="rule" data-anim="grow-x" data-anim-at="0.85" data-anim-duration="0.7" data-anim-target-w="936"></div>
+      <div class="enter-row">
+        <span class="lbl" data-anim="fade-in" data-anim-at="0.95" data-anim-duration="0.5">Reference Card</span>
+        <span class="ln" data-anim="grow-x" data-anim-at="0.95" data-anim-duration="0.7" data-anim-target-w="220"></span>
+        <span class="arr" data-anim="fade-in" data-anim-at="1.1" data-anim-duration="0.4">&rarr;</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div></div>
+</body>
+</html>

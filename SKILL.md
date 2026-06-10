@@ -47,6 +47,7 @@ ls "<SKILL_DIR>/assets/fonts" "<SKILL_DIR>/assets/vendor/gsap.min.js"
 Required:
 
 - `ffmpeg` / `ffprobe` (system)
+- `python3` (stdlib only) — for `scripts/auto-style.py`, the auto style-match by video color in Step 7.0
 - `<SKILL_DIR>/assets/fonts/*.woff2`, `<SKILL_DIR>/assets/vendor/gsap.min.js` (bundled inside this skill, staged to work dir in Step 9)
 
 Optional:
@@ -360,7 +361,7 @@ Before you start designing cards or deciding bounds, **ask the user to
 pick the output ratio, the layout, the style, and the card-density
 preset**. Frames are auto-selected from the chosen layout × style
 combination (see "Auto-pick frame" table below). Before sending the
-question, **precompute two things**:
+question, **precompute three things**:
 
 1. **`recommendedRatio`** from the source video's aspect ratio
    (`metadata.json` width / height):
@@ -375,6 +376,28 @@ question, **precompute two things**:
 2. **`autoCount`** from Step 6 (`max(5, round(videoSec / (basePace ×
    densityMultiplier)))`) so the "自动" option's label can show the
    concrete number.
+
+3. **`recommendedStyle`** — **auto-match the style from the source video's
+   own colors (明暗 + 冷暖)**. Run the bundled analyzer (samples frames,
+   reads each frame's average color via `ffmpeg scale=1:1`, classifies
+   light/dark × warm/cool):
+
+   ```bash
+   python3 "<SKILL_DIR>/scripts/auto-style.py" "$VIDEO_PATH" --json
+   # → {"mode":"dark","temp":"cool","recommend":["nebula-glass",...],"note":"..."}
+   ```
+
+   Map → **day/night auto-switch**: a bright video (`mode=light`) lands a
+   light style (`swiss` / `pastel-aura` / `minimal`); a dark video
+   (`mode=dark`) lands a dark style (`nebula-glass` / `glass` /
+   `spatial`); `temp` (warm/cool) picks within that. Use
+   `recommend[0]` as **`recommendedStyle`**, and in the style question
+   below **reorder so the group containing `recommendedStyle` is FIRST**
+   and append " (推荐 · 匹配视频 <mode>/<temp>)" to that group's label.
+   If the user pre-approved defaults ("auto/无需询问"), **skip the style
+   question and use `recommendedStyle` directly** — this IS the
+   day/night auto-match. Always overridable: the user's explicit pick
+   wins over the auto-recommendation.
 
 **Environment compatibility — pick the best available question channel.**
 Not every runtime exposes the same structured-question tool. Apply this
@@ -400,8 +423,8 @@ Rules that apply to every channel:
 - If the user has already pre-approved defaults ("just use defaults",
   "无需询问", "auto-pick everything") or asked you not to ask — **skip
   the question entirely** and use: `recommendedRatio`, `layout="stack"`
-  (safest cross-ratio default), `style` chosen from transcript tone in
-  the most neutral group (editorial/数据), `autoCount`, `rhythm="fixed"`
+  (safest cross-ratio default), `style = recommendedStyle` (the
+  auto-matched day/night style from `auto-style.py` above), `autoCount`, `rhythm="fixed"`
   (calm default unless the content is short-form / high-energy, where
   `dynamic` fits better). Tell the user what you picked in one sentence
   and continue.
@@ -439,17 +462,18 @@ AskUserQuestion({
       ]
     },
     {
-      question: "选择卡片视觉风格 (style)：",
-      header: "风格大类",
+      question: "选视觉风格：你的内容想要什么感觉？",
+      header: "选风格",
       multiSelect: false,
-      // NOTE: these 4 groups intentionally match the frame auto-pick matrix
-      // rows below, so picking a group resolves both `style` group AND the
-      // frame matrix column in one step. Memberships are mutually exclusive.
+      // 中文优先词库（中文名 + 大白话「什么时候用」），让中国创作者一眼会选。
+      // 括号里的英文 key 不展示给非技术用户也行，但保留它，agent 用它映射到
+      // frame auto-pick matrix 的列（cinematic / clinical / pastel-aura / editorial-print）。
+      // 4 个分组成员与下方 frame 矩阵一一对应，顺序可调（已把暗调组放第一）。
       options: [
-        { label: "柔和极光 (pastel-aura)", description: "象牙白底 + 薄荷绿/薰衣草紫/蜜桃粉极光渐变 · 衬线大标题 · 白色浮卡柔投影。适合个人分享、品牌叙事、AI/SaaS 调性内容。" },
-        { label: "温暖纸感 (warm-paper)", description: "academic 学术笔记 · editorial 大字编辑 · whiteboard 手写白板 · xhs 小红书。适合访谈反思、产品发布、生活方式、情绪故事。" },
-        { label: "冷峻临床 (clinical)",   description: "audit 审计杂志 · swiss 瑞士网格 · terminal CLI · minimal 现代极简。适合财报分析、调查报告、技术教程、严肃陈述。" },
-        { label: "实验电影感 (cinematic)", description: "geom 撞色几何 · spotlight 暗色聚光 · aurora-glass 彩雾磨砂玻璃 · spatial 暗场太空舱（深空暖光 + 伪 3D 悬浮面板 + 取景框仪表盘字 + 颗粒）。适合短视频高光、产品发布、强烈情绪、电影质感。" }
+        { label: "暗调电影感（黑底·高级·有动态）", description: "黑底、高级、电影质感。含：暗夜星河(nebula-glass，黑底流动粒子+玻璃，最高级最科技) · 玻璃拟态(glass，简单两色渐变+磨砂玻璃，半透明干净高级) · 暖光太空(spatial，黑底暖橙光，温暖有空间感) · 撞色大字(geom，黑底亮色块超大字，大胆有冲击)。什么时候用：产品/科技发布、短视频高光、强情绪开场、想要高级感。" },
+        { label: "干净专业（数据·报告·严肃）", description: "干净、克制、权威。含：瑞士网格(swiss，白底红点大字，专业权威) · 黑白极简(minimal，纯黑白大字+大留白，高级克制) · 代码终端(terminal，黑底绿字代码风，技术极客)。什么时候用：财报数据、调查报告、技术教程、严肃陈述。" },
+        { label: "浅色清爽（日常·白天·轻松）", description: "浅色、柔和、不刺眼。含：柔光浅色(pastel-aura，浅色柔和，白天/日常感)。什么时候用：个人日常分享、品牌叙事、轻松内容、画面偏亮的视频。" },
+        { label: "杂志素材（作品集·素材排版）", description: "把照片/视频排成杂志跨页，不是文字卡。含：杂志印刷(editorial-print)。什么时候用：作品集、大事记、公司/产品介绍、素材展示（走 references/editorial-print-montage.md）。" }
       ]
     },
     {
@@ -498,11 +522,15 @@ the reply. Bullet-style 1/2/3/4 keeps the reply parseable:
    C. pip     画中画 (card 满屏, video 圆角小窗)
    D. overlay 全屏浮层 (video 全屏, card 玻璃浮层)
 
-3) 卡片风格大类 (与 frame 自动矩阵同构,4 选 1)：
-   A. 柔和极光 pastel-aura     (极光渐变 + 衬线 + 白浮卡)
-   B. 温暖纸感 warm-paper      (academic / editorial / whiteboard / xhs)
-   C. 冷峻临床 clinical        (audit / swiss / terminal / minimal)
-   D. 实验电影感 cinematic     (geom / spotlight / aurora-glass / spatial)
+3) 视觉风格 — 你的内容想要什么感觉？(4 选 1)：
+   A. 暗调电影感（黑底·高级·有动态）：暗夜星河 / 玻璃拟态 / 暖光太空 / 撞色大字
+      → 产品科技发布、短视频高光、强情绪、想高级感
+   B. 干净专业（数据·报告·严肃）：瑞士网格 / 黑白极简 / 代码终端
+      → 财报数据、调查报告、技术教程、严肃陈述
+   C. 浅色清爽（日常·白天·轻松）：柔光浅色
+      → 个人日常分享、品牌叙事、轻松内容、画面偏亮
+   D. 杂志素材（作品集·素材排版）：杂志印刷
+      → 作品集、大事记、公司/产品介绍、素材展示（非文字卡）
 
 4) 卡片数量 (takeaway 节奏)：
    A. 自动 (推荐) — 约 <autoCount> 张
@@ -549,7 +577,10 @@ After the user answers (any channel):
    transcript tone — pick the one that best fits, but stay inside the
    user's chosen group. If you're unsure between two specific styles
    inside the group, send a second `AskUserQuestion` with those 2–4
-   specific style options.
+   specific style options — **用中文名提问**（暗夜星河 / 玻璃拟态 / 暖光太空…），
+   每个带一句「什么时候用」。中文名 ↔ key 的权威对照见
+   `references/DESIGN_INDEX.md` 的「中文风格词库」表；`recommendedStyle`
+   也优先用 `auto-style.py` 输出的 `recommend_cn`（中文名）呈现给用户。
 
 3. **Resolve final cardCount** from the density answer:
 
@@ -564,12 +595,19 @@ After the user answers (any channel):
 4. **Auto-pick the video frame** from this table (frames don't ask the
    user — they follow from layout × style):
 
-   | layout | pastel-aura (light) | warm-paper styles (academic / whiteboard / editorial / xhs) | clinical styles (audit / swiss / terminal / minimal) | cinematic styles (geom / spotlight / aurora-glass / spatial) |
+   | layout | pastel-aura (light) | editorial-print (montage) | clinical styles (swiss / terminal / minimal) | cinematic styles (geom / glass / spatial / nebula-glass) |
    |---|---|---|---|---|
-   | `split` | `clean` | `polaroid` | `hairline` | `clean` / `hairline` (spatial 取景框同源) |
+   | `split` | `clean` | `polaroid` | `hairline` | `clean` / `hairline` (spatial 取景框同源; nebula-glass 恒 `clean`) |
    | `stack` | `clean` | `polaroid` | `hairline` | `clean` / `hairline` |
    | `pip` | `clean` (white-ring pip pill) | `clean` (pip pill already has chrome) | `clean` | `clean` (spatial: 给 pip 加暖光取景框角标) |
-   | `overlay` | `clean` (full-bleed forbids deco frames) | `clean` (full-bleed forbids deco frames) | `clean` | `clean` |
+   | `overlay` | `clean` (full-bleed forbids deco frames) | `clean` (full-bleed forbids deco frames) | `clean` | `clean` (nebula-glass: 全屏粒子场忌加边框) |
+
+   > **`editorial-print` is exempt from this matrix.** Its cards are fullscreen
+   > asset *scenes* with no video↔card split, and every asset panel carries its
+   > own 3px ink border — so the frame is **always `clean`** (a `polaroid`/
+   > `hairline` deco would double-border and cheapen it). Layout for these cards
+   > is effectively `fullscreen`; `#video-wrap` is hidden (woven mode) or absent
+   > (standalone mode). See `references/editorial-print-montage.md`.
 
 5. **Resolve the camera rhythm** from the 运镜 answer:
    - **固定人像 → `rhythm = "fixed"`** — the source video stays in ONE
@@ -586,7 +624,7 @@ After the user answers (any channel):
    matching `references/<dim>/<key>.html` for tokens and structure.
 
 If the user picks an answer via "Other" with a free-text style name not
-in the 13-style library, treat it as a hint to design a fresh card
+in the 15-style library, treat it as a hint to design a fresh card
 visual yourself, but still anchor on the chosen layout's bounds.
 
 #### Render Strategy Inputs
@@ -628,10 +666,14 @@ Available fonts (woff2 in `<SKILL_DIR>/assets/fonts/`, staged to work dir in Ste
 (geometric hand). Reference via `@font-face` or `font-family` directly.
 
 For inspiration on visual patterns, `<SKILL_DIR>/references/styles/`
-ships 13 self-contained reference cards (pastel-aura / aurora-glass / spatial /
-academic / editorial / minimal / spotlight / geom / whiteboard / audit /
-terminal / swiss / xhs) that you can copy as starting points — but **do not
-feel constrained to match any of these**. Each card is your own design.
+ships 9 self-contained reference cards (pastel-aura / glass / spatial /
+nebula-glass / minimal / geom / terminal / swiss /
+editorial-print) that you can copy as starting points —
+but **do not feel constrained to match any of these**. Each card is your own
+design. `editorial-print` is the odd one out — an **asset-driven montage** (user
+images/clips arranged like a printed spread, no talking-head spine); it has its
+own multi-asset kit in `references/editorial-print-montage.md` — read that when
+you reach for it.
 
 #### Visual Design Library (<SKILL_DIR>/references/)
 
@@ -641,12 +683,12 @@ visual dimensions you can freely mix:
 
 ```
 Style  ×  Layout  ×  VideoFrame
- (13)      (4)         (3)
+ (9)       (4)         (3)
 ```
 
 | dimension | keys | what it decides |
 |---|---|---|
-| **style** | `academic` `editorial` `minimal` `spotlight` `geom` `whiteboard` `audit` `terminal` `swiss` `xhs` `pastel-aura` `aurora-glass` `spatial` | the card's visual language — fonts, colors, ornament, layout-within-card |
+| **style** | `minimal` `geom` `terminal` `swiss` `pastel-aura` `glass` `spatial` `nebula-glass` `editorial-print` | the card's visual language — fonts, colors, ornament, layout-within-card |
 | **layout** | `split` `stack` `pip` `overlay` | how the source video and the card share the canvas |
 | **frame** | `clean` `hairline` `polaroid` | the decorative chrome around the video element |
 
@@ -665,31 +707,39 @@ style / layout / frame, Read the corresponding file:
   `storyboard.json`'s per-card `layout` field.
 - `references/frames/<key>.html` — decorative HTML to add as a sibling of
   `#video-wrap`, plus placement instructions for the composition CSS.
+- `references/editorial-print-montage.md` — the **multi-asset montage kit** for
+  the `editorial-print` style: 5 layout primitives (poster / photo-grid /
+  collage / logo-strip / print-stack), 3 signature transitions (whip-pan /
+  blinds-wipe / paper-flash), how to stage user images/clips into
+  `public/assets/`, image↔video slot rules, and two usage modes (woven B-roll
+  vs standalone no-speaker montage). Read it whenever the content is an asset
+  showcase rather than a text takeaway over a talking-head.
 
 Pick `style × layout × frame` **per card** — you can change all three
 between cards as long as the transitions read smoothly. A common rhythm:
-open `editorial × overlay × clean`, switch to `audit × split × hairline`
-for the data card, close on `whiteboard × pip × polaroid`.
+open `glass × overlay × clean`, switch to `swiss × split × hairline`
+for the data card, close on `nebula-glass × overlay × clean`.
 
 **Content → style, a starting heuristic (overridable, but start here).**
 Don't pick a style because it "looks nice" — match it to what the card is
 *saying*. The tone of the visual should agree with the tone of the content:
 
-| the card is about… | reach for | why |
+| 内容是关于… | 选这些（中文名 / key） | 为什么 |
 |---|---|---|
-| numbers, comparison, audit, proof | `swiss` `audit` `terminal` `minimal` | cold, grid-driven, no color noise — data reads as data |
-| a story, a feeling, a brand line | `editorial` `whiteboard` `pastel-aura` | warmth, breathing room, human typeface |
-| a hero moment, a product reveal, a punchline | `geom` `spotlight` `aurora-glass` `spatial` | bold color, depth, motion-forward — earns the emphasis |
-| dense explanation, a framework, steps | `academic` `whiteboard` `audit` | structured, readable at small sizes |
-| a casual / personal share | `xhs` `pastel-aura` `editorial` | soft, feed-native, low-formality |
+| 数字、对比、财报、证据 | 瑞士网格 `swiss` · 代码终端 `terminal` · 黑白极简 `minimal` | 冷、网格、零色彩噪音 —— 数据就该像数据 |
+| 故事、情绪、品牌一句话 | 柔光浅色 `pastel-aura` · 玻璃拟态 `glass` · 暗夜星河 `nebula-glass` | 有纵深也克制；靠光和排版，不靠暖纸小装饰 |
+| 高光时刻、产品揭晓、金句 | 暗夜星河 `nebula-glass` · 撞色大字 `geom` · 玻璃拟态 `glass` · 暖光太空 `spatial` | 大胆、有纵深、动态感 —— 撑得起强调（暗夜星河 = 黑底双星粒子场，科技/电影感最强）|
+| 密集讲解、框架、步骤 | 瑞士网格 `swiss` · 代码终端 `terminal` · 黑白极简 `minimal` | 结构化、小字也清楚 |
+| 随手的个人分享 | 柔光浅色 `pastel-aura` | 柔、亲和、像 feed 原生、不正式 |
+| 素材本身就是主角（作品集、大事记、产品/公司 montage）| 杂志印刷 `editorial-print` | 把真实素材排成杂志跨页；整屏场景，不是文字压视频 —— 见 montage kit |
 
 Keep **one** style family across a video for cohesion — don't strobe between
 cold and cinematic every card. Shift style only when the *content* shifts
 register (e.g. the one data card in an otherwise warm story). If you pick a
-style against this grid (e.g. `aurora-glass` for a tax-law breakdown), do it
+style against this grid (e.g. `glass` for a tax-law breakdown), do it
 on purpose for contrast — not by default.
 
-The 13 styles are skill-side design tokens, **not composition-level themes** —
+The 9 styles are skill-side design tokens, **not composition-level themes** —
 they don't need to be declared in `storyboard.composition`; they live
 inside each card's HTML. The `themeId` field can still pick a
 composition-level palette (table above) that controls page-body background
@@ -943,6 +993,19 @@ contains a single rooted HTML fragment that follows this contract:
 - All assets via relative paths into the same `public/` directory
 - Colors via `var(--accent-N)` etc. for portability across themes
 
+> **These hard rules govern CARD fragments.** The composition `index.html` itself
+> legitimately carries `<script>` (the GSAP block) — and MAY also drive a
+> background `<canvas>` atmosphere layer (e.g. `nebula-glass`'s flow-field particle
+> field) **under one strict condition: the canvas draw must be a closed-form
+> function of the timeline time `draw(t)` and be driven by the master timeline's
+> `onUpdate` (a proxy tween whose value === time), NOT by `requestAnimationFrame`
+> or accumulated per-frame state.** No `Math.random()` / `Date.now()` inside
+> `draw` (seed particle init once with a PRNG like mulberry32 instead). This keeps
+> the canvas deterministic under HyperFrames' seek-based capture — verified: two
+> snapshots at the same `t` are byte-identical. The full copy-paste recipe lives in
+> `references/styles/nebula-glass.html`'s header. Cards stay script-free; only the
+> composition shell hosts the canvas.
+
 #### Overflow safety — NON-NEGOTIABLE (the #1 cause of broken cards)
 
 Text that overruns its card is the most common defect — a long headline
@@ -984,7 +1047,7 @@ declaration into the single master GSAP timeline in Step 9.
 
 #### Card Sizing — Mobile-First in Portrait
 
-The 13 `references/styles/*.html` are sized for a **1920×1080 landscape**
+The 9 `references/styles/*.html` are sized for a **1920×1080 landscape**
 preview. When `storyboard.layout = "portrait"` (1080×1920, the dominant
 case for social / mobile), **scale every visual size up** — phones hold
 the screen close, and the same pixel count reads smaller than on a

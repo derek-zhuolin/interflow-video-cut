@@ -1,28 +1,41 @@
 <!--
-  Style: geom — chartreuse + hot pink + black collision · bold Helvetica
+  Style: geom (撞色几何 · 单色电光 · 瑞士网格)  ← 2026-06 重做：双色 rave → 单色克制
   ─────────────────────────────────────────────────────────────────────
+  身份：黑底 + 大胆几何撞色能量，但只用 **一个** 高冲击电光色（电光黄绿
+  #D4FF3A）。旧版 chartreuse + hot pink 双色像 rave 派对，廉价；现在收成
+  「黑底 + 一抹电光 + 白线」的纪律感。Swiss/国际主义：硬边几何块、严格网格、
+  超大无衬线、负空间承重，不靠装饰。
+
   Tokens
-    bg     #0a0a0a  (deep black for contrast)
-    ink    #ffffff
-    muted  #aaaaaa
-    accent #d4ff00  (chartreuse — primary slab)
-    accent2#ff2e88  (hot pink — secondary slab + dot)
-    accent3#ffffff  (white — line work)
+    bg      #08090a   (近黑舞台)
+    ink     #F4F6F2   (主文字：微暖白)
+    muted   rgba(244,246,242,.50)
+    faint   rgba(244,246,242,.26)
+    accent  #D4FF3A   (电光黄绿 —— 唯一高冲击色：实块/描边/标点)
+    line    rgba(244,246,242,.16)  (发丝网格线)
   Fonts
-    headline — Inter Black / ui-sans-serif with very wide weight
-    body     — Inter
+    headline — Inter 900 / PingFang SC，超大 + 负字距 + uppercase
+    meta/EN  — Inter 600/800，letter-spacing .26–.34em，uppercase
+    body/中文 — PingFang SC / Inter
+  Signature moves
+    - 单 accent 实块（slab）从边缘切入，硬边、无圆角、Swiss 直角
+    - 超大空心描边字（-webkit-text-stroke accent）做撞色焦点
+    - 严格网格：取景框四角 ticks + 一道贯穿发丝线 + 数字 meta
+    - 大字标题压在网格上，大量负空间，只在一个词上落 accent
+    - 禁第二撞色，禁暖纸底，禁圆角软化 —— bold 但克制
   Best with
-    layouts: pip, overlay, stack
+    layouts: overlay, stack, pip
     frames:  clean, hairline
     content: 产品发布 / 大胆宣言 / 撞色封面 / 短视频高光
+    配色变体：accent 换电光蓝 #5B8CFF 即与 nebula/aurora 同温（仍只用一色）
 -->
 <!doctype html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
-<title>style · geom</title>
+<title>style · geom (撞色几何 · 单色电光 · 瑞士网格)</title>
 <style>
-  html, body { margin: 0; padding: 0; background: #0a0c12;
+  html, body { margin: 0; padding: 0; background: #08090a;
                font-family: ui-sans-serif, system-ui, sans-serif; }
   .stage { position: relative; width: 1920px; height: 1080px;
            transform-origin: top left; transform: scale(0.5); overflow: hidden; }
@@ -35,69 +48,121 @@
 <div class="card" data-card-id="ref-geom">
   <style>
     .card[data-card-id="ref-geom"] .root {
-      --bg: #0a0a0a; --ink: #ffffff; --muted: #aaaaaa;
-      --accent: #d4ff00; --accent2: #ff2e88; --accent3: #ffffff;
+      --bg: #08090a; --ink: #F4F6F2;
+      --muted: rgba(244,246,242,.50); --faint: rgba(244,246,242,.26);
+      --accent: #D4FF3A; --line: rgba(244,246,242,.16);
       --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-      --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+      --font-han: "PingFang SC", "Inter", sans-serif;
 
-      width: 100%; height: 100%; position: relative; overflow: hidden;
+      width: 1920px; height: 1080px; position: relative; overflow: hidden;
       background: var(--bg); color: var(--ink); font-family: var(--font-sans);
+      box-sizing: border-box;
     }
-    .card[data-card-id="ref-geom"] .slab-1 {
-      position: absolute; left: 0; top: 0; width: 540px; height: 200px;
+
+    /* ── Swiss 几何块：单 accent 实块从右侧硬边切入 ── */
+    .card[data-card-id="ref-geom"] .slab {
+      position: absolute; right: 0; top: 0; width: 300px; height: 100%;
       background: var(--accent);
     }
-    .card[data-card-id="ref-geom"] .slab-2 {
-      position: absolute; right: 0; bottom: 0; width: 360px; height: 360px;
-      background: var(--accent2);
+    /* accent 实块上压一组黑色阶梯，制造硬边几何撞击 */
+    .card[data-card-id="ref-geom"] .notch {
+      position: absolute; right: 300px; top: 0; width: 120px; height: 360px;
+      background: var(--accent);
     }
-    .card[data-card-id="ref-geom"] .stripe {
-      position: absolute; left: -40px; top: 760px; height: 4px; width: 600px;
-      background: var(--accent3); transform: rotate(-6deg);
+    /* 黑色硬边横条切过 accent 块底部 —— Swiss 撞色，非装饰 */
+    .card[data-card-id="ref-geom"] .barcode {
+      position: absolute; right: 0; bottom: 132px; width: 300px;
+      display: flex; flex-direction: column; gap: 22px;
+      z-index: 2;
     }
+    .card[data-card-id="ref-geom"] .barcode i { display: block; width: 100%; background: var(--bg); }
+    .card[data-card-id="ref-geom"] .barcode i:nth-child(1) { height: 26px; }
+    .card[data-card-id="ref-geom"] .barcode i:nth-child(2) { height: 14px; }
+    .card[data-card-id="ref-geom"] .barcode i:nth-child(3) { height: 46px; }
+
+    /* ── 取景框四角 ticks（白发丝，Swiss 网格 chrome）── */
+    .card[data-card-id="ref-geom"] .tick { position: absolute; width: 40px; height: 40px; border-color: var(--line); }
+    .card[data-card-id="ref-geom"] .tick.tl { top: 56px; left: 64px; border-top: 1.6px solid; border-left: 1.6px solid; }
+    .card[data-card-id="ref-geom"] .tick.bl { bottom: 56px; left: 64px; border-bottom: 1.6px solid; border-left: 1.6px solid; }
+
+    /* ── 顶部 meta（仪表字，与 nebula/aurora 看齐）── */
+    .card[data-card-id="ref-geom"] .meta {
+      position: absolute; top: 60px; left: 124px; right: 480px; z-index: 3;
+      display: flex; justify-content: space-between; align-items: center;
+      font: 600 19px/1 var(--font-sans); letter-spacing: .30em; text-transform: uppercase;
+      color: var(--faint);
+    }
+    .card[data-card-id="ref-geom"] .meta .rec { display: flex; align-items: center; gap: 11px; color: var(--accent); }
+    .card[data-card-id="ref-geom"] .meta .rec .d { width: 11px; height: 11px; background: var(--accent);
+      box-shadow: 0 0 16px var(--accent); }
+
+    /* ── 内容网格 ── */
     .card[data-card-id="ref-geom"] .content {
-      position: absolute; left: 64px; top: 240px; right: 480px; bottom: 80px;
-      display: flex; flex-direction: column; justify-content: center; gap: 28px;
+      position: absolute; left: 124px; top: 0; right: 520px; height: 100%;
+      display: flex; flex-direction: column; justify-content: center; gap: 34px;
+      z-index: 3;
     }
     .card[data-card-id="ref-geom"] .kicker {
-      align-self: flex-start; padding: 8px 14px;
-      background: var(--ink); color: var(--bg);
-      font: 800 18px/1 var(--font-mono); letter-spacing: .24em;
+      align-self: flex-start; display: flex; align-items: center; gap: 14px;
+      font: 800 19px/1 var(--font-sans); letter-spacing: .26em; text-transform: uppercase;
+      color: var(--ink);
     }
+    .card[data-card-id="ref-geom"] .kicker .sq { width: 14px; height: 14px; background: var(--accent); }
     .card[data-card-id="ref-geom"] .title {
-      margin: 0;
-      font: 900 156px/0.92 var(--font-sans);
-      color: var(--ink); letter-spacing: -.04em;
-      text-transform: uppercase;
+      margin: 0; font: 900 188px/0.90 var(--font-sans);
+      color: var(--ink); letter-spacing: -.045em; text-transform: uppercase;
     }
-    .card[data-card-id="ref-geom"] .stroke {
+    .card[data-card-id="ref-geom"] .title .stroke {
       -webkit-text-stroke: 3px var(--accent); color: transparent;
     }
-    .card[data-card-id="ref-geom"] .detail {
-      margin: 0; font: 600 26px/1.4 var(--font-sans);
-      color: var(--muted); max-width: 88%;
+    /* 贯穿发丝线 + 序号 */
+    .card[data-card-id="ref-geom"] .rule { height: 1.5px; width: 100%; background: var(--line); }
+    .card[data-card-id="ref-geom"] .footrow {
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 40px;
     }
-    .card[data-card-id="ref-geom"] .detail .pink { color: var(--accent2); }
+    .card[data-card-id="ref-geom"] .footrow .idx {
+      font: 900 92px/0.8 var(--font-sans); letter-spacing: -.04em;
+      color: transparent; -webkit-text-stroke: 1.6px var(--line);
+    }
+    .card[data-card-id="ref-geom"] .detail {
+      margin: 0; flex: 1; font: 500 28px/1.5 var(--font-han);
+      color: var(--muted); max-width: 600px;
+    }
+    .card[data-card-id="ref-geom"] .detail b { color: var(--accent); font-weight: 700; }
   </style>
 
   <div class="root">
-    <span class="slab-1" data-anim="slide-in" data-anim-at="0.1" data-anim-duration="0.45"
-          data-anim-from="left" data-anim-distance="540"></span>
-    <span class="slab-2" data-anim="slide-in" data-anim-at="0.25" data-anim-duration="0.45"
-          data-anim-from="right" data-anim-distance="360"></span>
-    <span class="stripe" data-anim="grow-x" data-anim-at="0.5" data-anim-duration="0.5"
-          data-anim-target-w="600"></span>
+    <span class="slab" data-anim="slide-in" data-anim-at="0.10" data-anim-duration="0.45"
+          data-anim-from="right" data-anim-distance="300"></span>
+    <span class="notch" data-anim="slide-in" data-anim-at="0.20" data-anim-duration="0.45"
+          data-anim-from="right" data-anim-distance="420"></span>
+    <div class="barcode">
+      <i data-anim="grow-x" data-anim-at="0.62" data-anim-duration="0.35" data-anim-target-w="300"></i>
+      <i data-anim="grow-x" data-anim-at="0.68" data-anim-duration="0.35" data-anim-target-w="300"></i>
+      <i data-anim="grow-x" data-anim-at="0.74" data-anim-duration="0.35" data-anim-target-w="300"></i>
+    </div>
+
+    <span class="tick tl"></span><span class="tick bl"></span>
+    <div class="meta">
+      <span data-anim="fade-in" data-anim-at="0.15" data-anim-duration="0.5">INTERFLOW / GEOM</span>
+      <span class="rec" data-anim="fade-in" data-anim-at="0.25" data-anim-duration="0.5"><span class="d"></span> REC · 16:9</span>
+    </div>
 
     <div class="content">
-      <span class="kicker" data-anim="fade-in" data-anim-at="0.05" data-anim-duration="0.4">TAKEAWAY</span>
-
-      <h1 class="title" data-anim="fade-in" data-anim-at="0.55" data-anim-duration="0.5">
+      <span class="kicker" data-anim="fade-in" data-anim-at="0.30" data-anim-duration="0.5">
+        <span class="sq"></span> TAKEAWAY
+      </span>
+      <h1 class="title" data-anim="slide-in" data-anim-at="0.45" data-anim-duration="0.7"
+          data-anim-from="bottom" data-anim-distance="44">
         <span class="stroke">BIG</span><br />IDEA.
       </h1>
-
-      <p class="detail" data-anim="fade-in" data-anim-at="0.95" data-anim-duration="0.4">
-        别再做温和的中间方案。要么<span class="pink">最大胆</span>，要么不做。
-      </p>
+      <div class="rule" data-anim="grow-x" data-anim-at="0.95" data-anim-duration="0.7" data-anim-target-w="836"></div>
+      <div class="footrow">
+        <div class="idx" data-anim="fade-in" data-anim-at="1.05" data-anim-duration="0.5">01</div>
+        <p class="detail" data-anim="fade-in" data-anim-at="1.15" data-anim-duration="0.5">
+          别再做温和的中间方案。要么<b>最大胆</b>，要么不做。
+        </p>
+      </div>
     </div>
   </div>
 </div>

@@ -146,9 +146,9 @@ tiny pip on top + a panel sunk at the bottom leaves a dead band in the middle.)
 This whole composition (atmosphere on `#stage` + pip + transparent cards + GSAP)
 is fully worked out in SKILL.md Step 9 — copy that template.
 
-✸ `nebula-glass`（暗场星云 · 磨砂玻璃 · 归藏排版）— 三股 DNA 融合：**flow-field
+✸ `nebula-glass`（暗场星云 · 磨砂玻璃 · 歸藏排版）— 三股 DNA 融合：**flow-field
 双星粒子场**（黑底 + 银白星 + 电光蓝热核星 + 拖丝，呼应 Velo/fable 类粒子模型的
-沉浸能量感）+ **磨砂玻璃面板**（沿用 glass 的 backdrop-blur DNA）+ **归藏式
+沉浸能量感）+ **磨砂玻璃面板**（沿用 glass 的 backdrop-blur DNA）+ **歸藏式
 瑞士排版**（强字阶、超大空心序号、发丝线、letter-spaced 英文 meta、取景框 chrome）。
 **关键**：真粒子场是 composition 级 canvas（卡片禁 `<script>`），必须写成**时间闭式
 `pos=f(t)` 并由 GSAP 时间轴 onUpdate 驱动**——这样 hyperframes 的确定性 seek 捕获才能

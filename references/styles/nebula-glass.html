@@ -1,11 +1,11 @@
 <!--
-  Style: nebula-glass (暗场星云 · 磨砂玻璃 · 归藏排版)
+  Style: nebula-glass (暗场星云 · 磨砂玻璃 · 歸藏排版)
   ─────────────────────────────────────────────────────────────────────
   三股 DNA 的融合：
     · 粒子 —— flow-field 双星粒子场（黑底 + 银白星 + 电光蓝热核星 + 拖丝），
               呼应 Velo/fable 类粒子模型的沉浸能量感
     · 玻璃 —— 沿用 glass 的磨砂面板（backdrop-blur + 亮边 + 顶部高光）
-    · 归藏 —— 瑞士/杂志式排版：强字阶、超大序号、发丝线、letter-spaced 英文
+    · 歸藏 —— 瑞士/杂志式排版：强字阶、超大序号、发丝线、letter-spaced 英文
               kicker、取景框 chrome（克制、网格、负空间）
 
   ⚠️ 关键技术约束（务必读）：真·粒子场不能写进卡片 HTML（卡片禁 <script>）。
@@ -32,9 +32,9 @@
   Signature moves
     - 玻璃面板：rgba(146,170,225,.06) + backdrop-filter blur(30px) saturate(150%)
       + 1.5px 亮边 + 顶部 46% 高光渐变 + 0 40px 120px 冷投影 + 内发光
-    - 面板左侧一道 accent 竖向标尺（归藏式）
+    - 面板左侧一道 accent 竖向标尺（歸藏式）
     - 标题局部用渐变描金（这里是描「冰」）：#FFF→accent-ice→accent + bg-clip:text
-    - 超大序号用 -webkit-text-stroke 空心字（归藏招牌）
+    - 超大序号用 -webkit-text-stroke 空心字（歸藏招牌）
     - 取景框四角 ticks + 中心 registration 十字（呼应截图里的 + 光标）
     - 顶部 meta：INTERFLOW / NEBULA + ● REC 仪表盘字
 
@@ -118,7 +118,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
-<title>style · nebula-glass (暗场星云 · 磨砂玻璃 · 归藏排版)</title>
+<title>style · nebula-glass (暗场星云 · 磨砂玻璃 · 歸藏排版)</title>
 <style>
   /* 标准预览外壳：1920×1080 缩 0.5。注意——本预览用「烘焙静态双星」作占位，
      真实动态粒子场是 composition 级 canvas（见上方 Composition-level 配方）。 */
@@ -153,7 +153,7 @@
       display:flex; align-items:flex-end; box-sizing:border-box;
       padding:0 96px 120px;
     }
-    /* 取景框四角 + 顶部 meta（归藏 chrome）*/
+    /* 取景框四角 + 顶部 meta（歸藏 chrome）*/
     .card[data-card-id="ref-nebula-glass"] .tick { position:absolute; width:40px; height:40px;
       border-color:rgba(190,210,255,.22); }
     .card[data-card-id="ref-nebula-glass"] .tick.tl { top:56px; left:60px; border-top:1.6px solid; border-left:1.6px solid; }

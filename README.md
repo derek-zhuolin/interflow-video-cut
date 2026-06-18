@@ -74,6 +74,10 @@ input.mp4
 - 代价：首次要下载几百 MB ~ 数 GB 的模型，慢且占磁盘；中文标点和**词级时间戳**通常更糙——而本 skill 的卡片排版高度依赖精确的词级时间戳来对齐字卡。
 - 因此转录命令写死了 `--asr elevenlabs`，**不存在"手滑下载到本地模型"的可能**。
 
+> 📝 **想改成本地 Whisper？可以——这是个干净的改造点。** 转录是整条管线里唯一的"外部引擎"插槽（SKILL.md 第 4 步）。把 `vtake transcribe --asr elevenlabs` 换成本地 `whisper.cpp` / `faster-whisper`，只要输出同样结构的 `transcript.json`（含词级时间戳），后面所有步骤都不用动。改完你得到：**零 API 成本、完全离线、隐私不出本机、不受任何限流**。
+>
+> 但有个常见误解要澄清：**它省的不是 Claude token。** 转录用哪个引擎，喂给 Agent 的文字稿大小一样大；LLM token 只花在"设计卡片 / 写 HTML"那几步。本地 Whisper 省的是 ElevenLabs 的调用额度和网络依赖，不是上下文 token。
+
 **ElevenLabs 路线**（本 skill 默认）——底层用 [`@notedit/vtake`](https://github.com/notedit/vtake-skills) CLI（即 vtake），分两种模式：
 
 | 模式 | 怎么用 | 适合 | 限制 |
@@ -140,6 +144,15 @@ input.mp4
 - **禁止 `<script>`**、**禁止外链 URL**、**禁止内联事件**
 - 动效只用 `data-anim-*` 声明，最后统一编译进一条 GSAP 主时间轴
 - **动效默认是「丝滑」**：卡与卡**重叠滑移**转场（不硬切）+ 每张卡挂极慢**环境漂移**（入场后不冻住）+ 镜头 `#video-wrap` 与卡同相移动。恰到好处护栏：一次切换只用一个主转场动作、同屏持续运动 ≤2 个、关键信息落位后静止 ≥1.5s。详见 SKILL.md「Motion Philosophy」与 `references/DESIGN_INDEX.md` 的 Motion 段。
+
+## 进阶玩法（社区可自行改造）
+
+这个 skill 全程 **CLI 驱动**（ffmpeg + vtake + hyperframes），中间只有"设计卡片"这步需要 Agent 思考——意味着它**可以无人值守、可以远程触发、可以批量**。几个值得试的方向：
+
+- **远程出片**：因为它能被任何"调得起本机 Agent / Claude Code 的通道"触发，你可以接飞书 / Lark CLI、Telegram bot 之类——人在外面，往群里丢一条口播视频 + 一句「剪成竖屏」，本机 skill 自动跑完再把成片回传。视频生产从"坐在电脑前"变成"发条消息"。
+- **本地 Whisper 改造**：见上面[「关于转录引擎」](#关于转录引擎为什么只用-elevenlabs不下本地-whisper)一节——离线 / 省 API 额度 / 隐私场景适用，转录第 4 步换引擎即可，后续不动。
+- **批量矩阵出片**：配自有 `ELEVEN_API_KEY` 跳过限流后，写个脚本循环喂多条视频，一次出一批（适合做员工 / 账号矩阵这种每天多条的场景）。
+- **自定义风格库**：`references/styles/` 下每个 HTML 都是自包含的风格模板，加一个你自己的就多一种选择——团队可以在这里沉淀统一视觉语言。
 
 ## 第三方资源与许可
 

@@ -219,6 +219,16 @@ Interflow Video Cut 在底层也直接调用了他维护的 `@notedit/vtake` CLI
 
 > *Swiss / editorial type & layout DNA — `swiss`, `nebula-glass`, `spatial` — inspired by [guizang-social-card-skill](https://github.com/op7418/guizang-social-card-skill) by [归藏 (@op7418)](https://github.com/op7418).*
 
+## 联系作者 · 互通有无 AI 俱乐部
+
+这个 skill 由 **卓霖（Derek）原创开发**。要交流、合作，或想用它一起把视频做得更好、更快，欢迎加我微信：
+
+> 💬 **微信号：`zhuolin25`**
+
+我们是 **互通有无 AI 俱乐部**，坐标 **上海**。欢迎同频的人互联——目标很简单：让大家**一起做出好视频，或者说更高效地做视频**。
+
+> ⏳ **性能说明**：前期模型 / 渲染如果跑得慢，可以**耐心等一等**——目前还在持续优化中。欢迎持续关注，有任何问题随时加我微信 `zhuolin25` 沟通。
+
 ---
 
 Made by **Interflow AI** · 口播 → 成片，你只管讲。

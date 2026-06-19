@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: AGPL-3.0 — 改写自歸藏 guizang-ppt-skill（AGPL-3.0）的 checklist。
+     本文件以 AGPL-3.0 分发（不随仓库 MIT）。边界见 NOTICE-guizang-family.md。 -->
+
 # 歸藏家族 · 交付质检门
 
 > clean 家族（Swiss + Editorial）卡片交付前过这道门。改写自

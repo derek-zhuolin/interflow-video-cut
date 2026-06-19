@@ -109,11 +109,16 @@ Node.js + `npx`（跑 vtake / hyperframes，首次自动下载）。字体和 GS
 
 ## 许可与致谢
 
-**本仓库自带代码**（SKILL.md、参考卡、脚本、README）以 [MIT](LICENSE) 授权，可自由使用、修改、商用。
+本仓库**整体以 [MIT](LICENSE) 授权**——SKILL.md、参考卡、脚本、README、视觉特效类风格等，可自由使用、修改、商用。
 
-> ⚠️ **一处要特别注意（商用前必读）**：「**歸藏家族**」那套简洁排版的视觉 DNA（`references/styles/guizang-dna.md`、`guizang-clean.css` 里的字阶纪律 / 预设调色板 / 组件库）提炼自设计师 **歸藏** 的 **[guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill)**，该项目是 **AGPL-3.0** 协议。
+> ⚠️ **一处例外（商用前必读）**：「**歸藏家族**」那套简洁排版的视觉 DNA 文件
+> （`references/styles/guizang-dna.md`、`guizang-clean.css`、`guizang-checklist.md`）提炼自设计师
+> **歸藏** 的 **[guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill)**，该项目是 **AGPL-3.0**。
+> 为尊重其 copyleft，**这些文件单独以 AGPL-3.0 分发**（不随仓库 MIT），swiss/minimal/terminal/editorial-print/pastel-aura 5 款风格内嵌了它们、就该视觉系统部分同样受约束。
 >
-> **AGPL-3.0 是「传染性」copyleft 协议**——个人 / 学习 / 非商用随便用；但**商用**（尤其做成对外的网络服务）时有义务：通常你的衍生部分也要以 AGPL-3.0 开源并公开源码。**打算商用前，请先读一遍 [guizang-ppt-skill 的 LICENSE](https://github.com/op7418/guizang-ppt-skill/blob/main/LICENSE) 并确认合规。**
+> **AGPL-3.0 是「传染性」copyleft**——个人 / 学习 / 非商用随便用；**商用**（尤其对外网络服务）时通常需把对应衍生也以 AGPL-3.0 开源。完整边界说明见
+> [`references/styles/NOTICE-guizang-family.md`](references/styles/NOTICE-guizang-family.md)，AGPL 全文见
+> [`LICENSE.AGPL-3.0.txt`](references/styles/LICENSE.AGPL-3.0.txt)。**商用前请确认合规，或联系歸藏获取另行授权。**
 
 打包的第三方资源各自遵循原始许可：**GSAP**（GreenSock 标准许可）· 字体 **Inter / Caveat / LXGW WenKai TC**（SIL OFL）· **Virgil**（MIT）· **@notedit/vtake**、**hyperframes**（各自 npm 许可）。密钥（如 `ELEVEN_API_KEY`）只走环境变量，别提交进 git。
 

@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: AGPL-3.0 — 视觉 DNA 提炼自歸藏 guizang-ppt-skill（AGPL-3.0）。
+     本文件以 AGPL-3.0 分发（不随仓库 MIT）。边界见 NOTICE-guizang-family.md。 -->
+
 # 歸藏 DNA — 简洁排版家族宪法
 
 > 「简洁排版类 · 歸藏家族」的纪律层。从 [op7418/guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill)

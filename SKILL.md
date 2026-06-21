@@ -29,6 +29,19 @@ skill: …"); all `references/…` + `scripts/…` paths are relative to it.
 The workflow skeleton is below; the heavy detail lives in `references/`. Clone
 from the library, don't reinvent.
 
+**Loading discipline (progressive disclosure — read this first).** Every file
+below is **Level 3**: it costs zero tokens until you open it, so open it **only
+when you actually branch into its step, and read only the slice you need** — not
+the whole file "to be safe." Concretely: (1) **never pre-read** these at the
+start of a run; pull each one at the moment its step arrives. (2) When a file is
+a catalog/matrix (`DESIGN_INDEX.md`, the resolution tables in
+`render-strategy.md`), read **the chosen style's / ratio's row**, not the entire
+matrix. (3) On the **fast path** — the user pre-approved a single known preset
+(e.g. says "默认 / glass-hud / 直接产") — skip `render-strategy.md` **and**
+`DESIGN_INDEX.md` entirely and go straight to that preset's recipe + the one
+style fragment it clones. Reading all four heavy refs on every run defeats the
+whole point of moving them out of `SKILL.md`.
+
 | file | what's inside | read at |
 |---|---|---|
 | `references/DESIGN_INDEX.md` | full style × layout × frame matrix + a decision guide + the 中文风格词库 (中文名 ↔ key) | Step 6 / 7 |
@@ -262,17 +275,28 @@ python3 "<SKILL_DIR>/scripts/auto-style.py" "$VIDEO_PATH" --json
 # → {"mode":"dark","temp":"cool","recommend":["nebula-glass",...],"note":"..."}
 ```
 
-Then ask the user 5 things (ratio / layout / style / card density / 运镜),
-using the best available question channel, and resolve everything from their
-answers. If the user pre-approved defaults ("auto / 无需询问"), skip the
-question and use the recommendations.
+**Asking is the default.** Ask the user 5 things (ratio / layout / style / card
+density / 运镜), using the best available question channel, and resolve
+everything from their answers. **Only skip the questions when the user
+explicitly opts out this turn** — they name a known preset or say "默认 /
+glass-hud / 直接产 / auto / 无需询问". Pre-approval is per-turn and explicit; do
+**not** treat a generic "make me a video" as opt-out.
+
+- **Fast path (explicit preset / opt-out):** skip the 5 questions, and **do not
+  read `render-strategy.md` or `DESIGN_INDEX.md`** — go straight to that preset's
+  recipe + the single style fragment it clones, then state your choices in one
+  sentence and proceed.
+- **Ask path (default):** read `render-strategy.md` **now** for the question
+  call + resolution tables — but only the slice for the ratio/theme you land on,
+  not every table.
 
 **→ The complete Step 7 — the 5-question `AskUserQuestion` call (Channel A) and
 plain-text fallback (Channel B), the day/night auto-match mapping, the
 canvas / frame / bounds resolution tables, theme palettes, the visual design
 library guide, 留白 (breathing room), camera rhythm (运镜 fixed vs dynamic), and
 the storyboard render contract — is in
-[`references/render-strategy.md`](references/render-strategy.md). Read it now.**
+[`references/render-strategy.md`](references/render-strategy.md). Read it on the
+**ask path** (skip it on the fast path).**
 
 After resolving, state back what you chose in one sentence (ratio + canvas size,
 layout, primary style + any sibling accent styles, frame, final cardCount,
@@ -310,8 +334,11 @@ node "$SKILL_DIR/scripts/validate-clean-card.mjs" "$WORK_DIR/public/cards/<card-
 canvas-atmosphere exception, NON-NEGOTIABLE overflow safety, portrait
 mobile-first sizing, the silky motion philosophy, the full `data-anim` kinds
 table, and the `card-cta` brand-outro template — is in
-[`references/card-contract.md`](references/card-contract.md). Read it before
-writing any card.**
+[`references/card-contract.md`](references/card-contract.md). Read it **once
+before your first card** — the **overflow safety + contract hard-rules are
+mandatory**; the `data-anim` table and the `card-cta` template are lookups, jump
+to them only when you actually need them (don't re-read the whole file per
+card).**
 
 ### 9. Assemble the Composition HTML
 
